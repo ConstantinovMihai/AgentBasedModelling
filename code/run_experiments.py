@@ -14,6 +14,7 @@ from prioritized import PrioritizedPlanningSolver
 from distributed import DistributedPlanningSolver # Placeholder for Distributed Planning
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
+from run_experiments import generatesSimulation
 
 SOLVER = "CBS"
 
@@ -33,7 +34,6 @@ def print_mapf_instance(my_map, starts, goals):
     print('Goal locations')
     print_locations(my_map, goals)
 
-
 def print_locations(my_map, locations):
     """
     See docstring print_mapf_instance function above.
@@ -52,7 +52,6 @@ def print_locations(my_map, locations):
                 to_print += '. '
         to_print += '\n'
     print(to_print)
-
 
 def import_mapf_instance(filename):
     """
@@ -162,6 +161,15 @@ def runSimulation(args):
     result_file.close()
 
 
+def generateExperiments(nb_maps, max_agents, nb_spawns):
+    """ Iterates through the number of agents to pass 
+    """
+    for i in range(max_agents):
+        for j in range(nb_maps):
+            for k in range(nb_spawns):
+                   generatesSimulation(i, j, k) 
+
+
 def parseArgs():
     parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
     parser.add_argument('--instance', type=str, default=None,
@@ -176,7 +184,10 @@ def parseArgs():
     args = parser.parse_args()
     return args
 
-
 if __name__ == '__main__':
+    
+    generateExperiments(nb_maps=3, nb_agents=10, nb_spawns=2)
+
     args = parseArgs()
     runSimulation(args)
+    
