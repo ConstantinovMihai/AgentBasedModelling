@@ -164,10 +164,9 @@ def runSimulation(args):
 def generateExperiments(nb_maps, max_agents, nb_spawns):
     """ Iterates through the number of agents to pass 
     """
-    for i in range(1, max_agents):
-        for j in range(nb_maps):
+    for i in range(nb_maps):
+        for j in range(1, max_agents):
             for k in range(nb_spawns):
-                   print(f"KKKK {k}")
                    generatesSimulation(i, j, k) 
 
 
@@ -188,7 +187,7 @@ def parseArgs():
 if __name__ == '__main__':
 
     generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
-
-    args = parseArgs()
-    runSimulation(args)
+    
+    # args = parseArgs()
+    # runSimulation(args)
     
