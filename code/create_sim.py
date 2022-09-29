@@ -77,9 +77,7 @@ def generate_sim(map_nb,nb_agents,spawn_type):
             f.write(f"{i[0]} {i[1]} {i[2]} {i[3]}"+"\n")
 
 
-    return locations
 
-print(generate_sim(0,10,0))
 
 
         
