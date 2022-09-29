@@ -108,7 +108,7 @@ def import_mapf_instance(filename):
     return my_map, starts, goals
 
 
-def processArgs(args):
+def processArgs(args, my_map, starts, goals ):
 
     time = 0
     paths = []
@@ -135,7 +135,34 @@ def processArgs(args):
     return paths, time
 
 
-if __name__ == '__main__':
+def runSimulation(args):
+    result_file = open("results.csv", "w", buffering=1)
+
+    # iterates among all the files 
+    for file in sorted(glob.glob(args.instance)):
+
+        print("***Import an instance***")
+        my_map, starts, goals = import_mapf_instance(file)
+        print_mapf_instance(my_map, starts, goals)
+
+        # get paths and time for the simulation
+        paths, time = processArgs(args, my_map, starts, goals )
+
+        # computes the total cost
+        cost = get_sum_of_cost(paths)
+
+        result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+
+        if not args.batch:
+            print("***Test paths on a simulation***")
+            animation = Animation(my_map, starts, goals, paths)
+            # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
+            animation.show()
+
+    result_file.close()
+
+
+def parseArgs():
     parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
     parser.add_argument('--instance', type=str, default=None,
                         help='The name of the instance file(s)')
@@ -147,28 +174,9 @@ if __name__ == '__main__':
                         help='The solver to use (one of: {CBS,Independent,Prioritized}), defaults to ' + str(SOLVER))
 
     args = parser.parse_args()
-    # Hint: Command line options can be added in Spyder by pressing CTRL + F6 > Command line options. 
-    # In PyCharm, they can be added as parameters in the configuration.
+    return args
 
-    result_file = open("results.csv", "w", buffering=1)
 
-    for file in sorted(glob.glob(args.instance)):
-
-        print("***Import an instance***")
-        my_map, starts, goals = import_mapf_instance(file)
-        print_mapf_instance(my_map, starts, goals)
-
-        # get paths and time for the simulation
-        paths, time = processArgs(args)
-
-        cost = get_sum_of_cost(paths)
-        #result_file.write("{}, {}, {}, {}")
-
-        result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
-
-        if not args.batch:
-            print("***Test paths on a simulation***")
-            animation = Animation(my_map, starts, goals, paths)
-            # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
-            animation.show()
-    result_file.close()
+if __name__ == '__main__':
+    args = parseArgs()
+    runSimulation(args)
