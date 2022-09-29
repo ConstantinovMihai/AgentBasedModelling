@@ -1,5 +1,8 @@
 import random
 
+
+random.seed(421)
+
 def generatesSimulation(map_nb,nb_agents,spawn_type):
     
     if map_nb == 0:
@@ -57,21 +60,20 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
                 start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
             #start_locations.append(start_location)
            
-            if start_location[0] == 0 or goal_location[0] == 1:
+            if start_location[0] == 0 or start_location[0] == 1:
                 goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
                 while goal_location in goal_locations:
                     goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
-            if start_location[0] == 20 or goal_location[0] == 21:
+
+            if start_location[0] == 20 or start_location[0] == 21:
                 goal_location = [random.choice([0,1]),random.choice(range(0, 9))]
                 while goal_location in goal_locations:
                     goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
             #goal_locations.append(goal_location)
         locations.append([start_location[1],start_location[0],goal_location[1],goal_location[0]])
-        
-
-    #text = 
-    print(*locations, sep = "\n")
-    filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
+    
+    # write the results in a file
+    filename = f"code/experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
     with open(filename, 'w') as f:
         f.write(map+"\n")
         f.write(str(nb_agents)+"\n")
