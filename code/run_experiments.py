@@ -14,7 +14,7 @@ from prioritized import PrioritizedPlanningSolver
 from distributed import DistributedPlanningSolver # Placeholder for Distributed Planning
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
-from run_experiments import generatesSimulation
+from create_sim import generatesSimulation
 
 SOLVER = "CBS"
 
@@ -164,9 +164,10 @@ def runSimulation(args):
 def generateExperiments(nb_maps, max_agents, nb_spawns):
     """ Iterates through the number of agents to pass 
     """
-    for i in range(max_agents):
+    for i in range(1, max_agents):
         for j in range(nb_maps):
             for k in range(nb_spawns):
+                   print(f"KKKK {k}")
                    generatesSimulation(i, j, k) 
 
 
@@ -185,8 +186,8 @@ def parseArgs():
     return args
 
 if __name__ == '__main__':
-    
-    generateExperiments(nb_maps=3, nb_agents=10, nb_spawns=2)
+
+    generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
 
     args = parseArgs()
     runSimulation(args)

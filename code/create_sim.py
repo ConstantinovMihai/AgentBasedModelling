@@ -1,5 +1,6 @@
 import random
-def generate_sim(map_nb,nb_agents,spawn_type):
+
+def generatesSimulation(map_nb,nb_agents,spawn_type):
     
     if map_nb == 0:
         map = """9 21
@@ -55,6 +56,7 @@ def generate_sim(map_nb,nb_agents,spawn_type):
             while start_location in start_locations:
                 start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
             #start_locations.append(start_location)
+           
             if start_location[0] == 0 or goal_location[0] == 1:
                 goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
                 while goal_location in goal_locations:
@@ -69,7 +71,7 @@ def generate_sim(map_nb,nb_agents,spawn_type):
 
     #text = 
     print(*locations, sep = "\n")
-    filename = f"{map_nb}-{nb_agents}-{spawn_type}.txt"
+    filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
     with open(filename, 'w') as f:
         f.write(map+"\n")
         f.write(str(nb_agents)+"\n")
