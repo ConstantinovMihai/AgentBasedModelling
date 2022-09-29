@@ -186,8 +186,8 @@ def parseArgs():
 
 if __name__ == '__main__':
 
-    generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
+    #generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
     
-    # args = parseArgs()
-    # runSimulation(args)
+    args = parseArgs()
+    runSimulation(args)
     

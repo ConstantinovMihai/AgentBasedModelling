@@ -40,25 +40,28 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
 . . @ @ @ @ . . . @ @ @ @ . . . @ @ @ @ . ."""
     
     locations = []
+    start_locations = []
+    goal_locations = []
     while len(locations) < nb_agents:        
-        start_locations = []
-        goal_locations = []
+        
         if spawn_type == 0:
             start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
             while start_location in start_locations:
                 start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
-            #start_locations.append(start_location)
+            start_locations.append(start_location)
                 
-            goal_location = [random.choice([20,21]),random.choice(range(0, 9))]                
+            goal_location = [random.choice([20,21]),random.choice(range(0, 9))]  
+            print(goal_location)
+            print(goal_locations)              
             while goal_location in goal_locations:
                 goal_location = [random.choice([20,21]),random.choice(range(0, 9))]                
-            #goal_locations.append(goal_location)
+            goal_locations.append(goal_location)
             
         elif spawn_type == 1:
             start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
             while start_location in start_locations:
                 start_location = [random.choice([0,1]),random.choice(range(0, 9))]                
-            #start_locations.append(start_location)
+            start_locations.append(start_location)
            
             if start_location[0] == 0 or start_location[0] == 1:
                 goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
@@ -69,11 +72,11 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
                 goal_location = [random.choice([0,1]),random.choice(range(0, 9))]
                 while goal_location in goal_locations:
                     goal_location = [random.choice([20,21]),random.choice(range(0, 9))]
-            #goal_locations.append(goal_location)
+            goal_locations.append(goal_location)
         locations.append([start_location[1],start_location[0],goal_location[1],goal_location[0]])
     
     # write the results in a file
-    filename = f"code/experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
+    filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
     with open(filename, 'w') as f:
         f.write(map+"\n")
         f.write(str(nb_agents)+"\n")
@@ -84,7 +87,6 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
 
 
 
-        
 
             
 
