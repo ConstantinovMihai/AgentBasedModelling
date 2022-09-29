@@ -172,7 +172,8 @@ class CBSSolver(object):
             P = self.pop_node()  
             # if node has no collisions, return paths         
             if len(P['collisions']) == 0:
-                return P['paths'] 
+                self.CPU_time = timer.time() - self.start_time
+                return P['paths'], self.CPU_time
 
             # convert collision to list of two constraints         
             collision = P['collisions'][0]  
@@ -212,8 +213,7 @@ class CBSSolver(object):
 
     def print_results(self, node):
         print("\n Found a solution! \n")
-        CPU_time = timer.time() - self.start_time
-        print("CPU time (s):    {:.2f}".format(CPU_time))
+        print("CPU time (s):    {:.2f}".format(self.CPU_time))
         print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
         print("Expanded nodes:  {}".format(self.num_of_expanded))
         print("Generated nodes: {}".format(self.num_of_generated))

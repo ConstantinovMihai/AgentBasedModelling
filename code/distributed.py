@@ -31,6 +31,7 @@ class DistributedPlanningSolver(object):
         
         Returns:
             result (list): with a path [(s,t), .....] for each agent.
+            self.CPU_Time (float) : how much time the solver needs
         """
         # Initialize constants       
         start_time = timer.time()
@@ -49,4 +50,4 @@ class DistributedPlanningSolver(object):
         print("Sum of costs:    {}".format(get_sum_of_cost(result)))  # Hint: think about how cost is defined in your implementation
         print(result)
         
-        return result  # Hint: this should be the final result of the distributed planning (visualization is done after planning)
+        return result , self.CPU_time # Hint: this should be the final result of the distributed planning (visualization is done after planning)

@@ -108,6 +108,33 @@ def import_mapf_instance(filename):
     return my_map, starts, goals
 
 
+def processArgs(args):
+
+    time = 0
+    paths = []
+
+    if args.solver == "CBS":
+        print("***Run CBS***")
+        cbs = CBSSolver(my_map, starts, goals)
+        paths, time = cbs.find_solution(args.disjoint)
+    elif args.solver == "Independent":
+        print("***Run Independent***")
+        solver = IndependentSolver(my_map, starts, goals)
+        paths, time = solver.find_solution()
+    elif args.solver == "Prioritized":
+        print("***Run Prioritized***")
+        solver = PrioritizedPlanningSolver(my_map, starts, goals)
+        paths, time = solver.find_solution()
+    elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
+        print("***Run Distributed Planning***")
+        solver = DistributedPlanningSolver(my_map, starts, goals, ...) #!!!TODO: add your own distributed planning implementation here.
+        paths, time = solver.find_solution()
+    else: 
+        raise RuntimeError("Unknown solver!")
+
+    return paths, time
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runs various MAPF algorithms')
     parser.add_argument('--instance', type=str, default=None,
@@ -131,28 +158,13 @@ if __name__ == '__main__':
         my_map, starts, goals = import_mapf_instance(file)
         print_mapf_instance(my_map, starts, goals)
 
-        if args.solver == "CBS":
-            print("***Run CBS***")
-            cbs = CBSSolver(my_map, starts, goals)
-            paths = cbs.find_solution(args.disjoint)
-        elif args.solver == "Independent":
-            print("***Run Independent***")
-            solver = IndependentSolver(my_map, starts, goals)
-            paths = solver.find_solution()
-        elif args.solver == "Prioritized":
-            print("***Run Prioritized***")
-            solver = PrioritizedPlanningSolver(my_map, starts, goals)
-            paths = solver.find_solution()
-        elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
-            print("***Run Distributed Planning***")
-            solver = DistributedPlanningSolver(my_map, starts, goals, ...) #!!!TODO: add your own distributed planning implementation here.
-            paths = solver.find_solution()
-        else: 
-            raise RuntimeError("Unknown solver!")
+        # get paths and time for the simulation
+        paths, time = processArgs(args)
 
         cost = get_sum_of_cost(paths)
-        result_file.write("{},{}\n".format(file, cost))
+        #result_file.write("{}, {}, {}, {}")
 
+        result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
 
         if not args.batch:
             print("***Test paths on a simulation***")
