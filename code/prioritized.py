@@ -46,16 +46,21 @@ class PrioritizedPlanningSolver(object):
 
             # for each agent after current agent        
             for j in range(i+1,self.num_of_agents):
-                # for the paths of all previous agents
+                # for paths of all previous agents
                 for path in result:
-                    # for each timestep in path
+                    # for each location of previous agents
                     for t in range(0,len(path)):
-                        # create constraint for agent location at current timestep
-                        constraints.append({'agent': j,'loc': [path[t]],'timestep': t})
-                        
-                        # if not the final location of the agent, implement a edge constraint containing the current and next location of the past agent
+                        # if the last location of that agent, implement constraint for next 200 time steps
+                        if  t == len(path)-1:
+                            for constraint_time in range(t,200):
+                                constraints.append({'agent': j,'loc': [path[t]],'timestep': constraint_time})
+                        # else implement for current time step
+                        else:
+                            constraints.append({'agent': j,'loc': [path[t]],'timestep': t})
+                        # if not the agents last point, implement an edge constraint as well
                         if t < len(path)-1:
                             constraints.append({'agent': j,'loc': [path[t+1],path[t]],'timestep': t+1})
+
                        
                     
             
