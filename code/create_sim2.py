@@ -48,16 +48,6 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
                     goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
             goal_locations.append(goal_location)
         
-        
-    
-    
-    # write the results in a file
-    # filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
-    # with open(filename, 'w') as f:
-    #     f.write(map+"\n")
-    #     f.write(str(nb_agents)+"\n")
-    #     for i in locations:
-    #         f.write(f"{i[0]} {i[1]} {i[2]} {i[3]}"+"\n")
     return map, start_locations, goal_locations
 
 
