@@ -18,6 +18,7 @@ from single_agent_planner import get_sum_of_cost
 from create_sim2 import generatesSimulation
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 SOLVER = "CBS"
 
@@ -147,7 +148,7 @@ def runSimulation(args, results, saveCVS = False):
         saveCVS (bool, optional): if set to true it will write the results in a CVS file. Defaults to False.
     """
     result_file = open("results.csv", "w", buffering=1)
-    """
+
     # iterates among all the files 
     for file in sorted(glob.glob(args.instance)):
 
@@ -183,20 +184,30 @@ def runSimulation(args, results, saveCVS = False):
             # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
             animation.show()
 
-    result_file.close()"""
+    result_file.close()
     
 
 
-def generateExperiments(nb_maps, max_agents, nb_spawns, args):
-    """ Iterates through the number of agents to pass 
+def generateExperiments(nb_maps, max_agents, nb_spawns, results, args):
+    """_summary_
+
+    Args:
+        nb_maps (_type_): _description_
+        max_agents (_type_): _description_
+        nb_spawns (_type_): _description_
+        results (_type_): description
+        args (_type_): _description_
+        saveCVS (bool, optional): _description_. Defaults to False.
     """
-    for i in range(nb_maps):
-        for j in range(2, max_agents):
-            for k in range(nb_spawns):
+    
+    for map in range(nb_maps):
+        for agent in range(2, max_agents):
+            for spawn_type in range(nb_spawns):
+                # TODO: IMPLEMENT THE STATISTICAL METHODS HERE
                 for idx in range(100):
                     print("***Import an instance***")
-                    #my_map, starts, goals = import_mapf_instance(file)
-                    my_map, starts, goals = generatesSimulation(i,j,k)
+                   
+                    my_map, starts, goals = generatesSimulation(map, agent, spawn_type)
                     print_mapf_instance(my_map, starts, goals)
 
                     # get paths and time for the simulation
@@ -205,13 +216,23 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, args):
                     # computes the total cost
                     cost = get_sum_of_cost(paths)
 
-                    #result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+                    # process the file key to get file_key: first element contains map-agent-type, the second elements contains the index
+                    file_key = f"map_{map}-agent_{agent}-spawn-{spawn_type}"
+                    
+                    # check if the key is already in the dict, if not, create it
+                    if file_key not in results:
+                        results[file_key] = np.array((cost, round(time, 6)))
+                    # add the simulation results to the corresponding dict
+                    else:
+                        results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
+
 
                     if not args.batch:
                         print("***Test paths on a simulation***")
                         animation = Animation(my_map, starts, goals, paths)
                             # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
                         animation.show() 
+
 
 
 def parseArgs():
@@ -243,6 +264,12 @@ def plotData(data):
     plt.hist(data)
     plt.show()
 
+def runSimulation():
+    generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, results=results, args=args)
+    # save the dicionary
+    with open('saved_dictionary.pkl', 'wb') as f:
+        pickle.dump(results, f)
+
 
 if __name__ == '__main__':
 
@@ -250,5 +277,13 @@ if __name__ == '__main__':
     
     args = parseArgs()
     #runSimulation(args)
-    generateExperiments(2, 3, 1, args)
+    # results = {}
+    # runSimulation()
     
+    # load the dictionary with the results
+    with open('saved_dictionary.pkl', 'rb') as f:
+        results = pickle.load(f)
+    
+    print(results.keys())
+
+    processResults(results)
