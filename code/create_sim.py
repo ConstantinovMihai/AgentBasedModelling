@@ -3,7 +3,7 @@ import random
 
 random.seed(421)
 #function which generates the input file for simulation depending on the desired map, number if agents and spawn type
-def generatesSimulation(map_nb,nb_agents,spawn_type):
+def generatesSimulation(map_nb,nb_agents,spawn_type, idx):
     #the three types of maps which are of interest    
     if map_nb == 0:
         map = """9 21
@@ -78,7 +78,7 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
         locations.append([start_location[1],start_location[0],goal_location[1],goal_location[0]])
     
     # write the results in a file
-    filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}.txt"
+    filename = f"experimental_setup/map_{map_nb}-agents_{nb_agents}-type_{spawn_type}-idx_{idx}.txt"
     with open(filename, 'w') as f:
         f.write(map+"\n")
         f.write(str(nb_agents)+"\n")

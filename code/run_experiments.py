@@ -16,6 +16,8 @@ from distributed import DistributedPlanningSolver # Placeholder for Distributed 
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
 from create_sim2 import generatesSimulation
+import numpy as np
+import matplotlib.pyplot as plt
 
 SOLVER = "CBS"
 
@@ -136,7 +138,14 @@ def processArgs(args, my_map, starts, goals ):
     return paths, time
 
 
-def runSimulation(args):
+def runSimulation(args, results, saveCVS = False):
+    """Runs the simulation using the provided args and either stores the data or puts in the results dictionary 
+
+    Args:
+        args (list): the arguments from the command line
+        results (list, optional): stores the total cost and the time needed to run a particular experiment. Defaults to {}.
+        saveCVS (bool, optional): if set to true it will write the results in a CVS file. Defaults to False.
+    """
     result_file = open("results.csv", "w", buffering=1)
     """
     # iterates among all the files 
@@ -153,7 +162,20 @@ def runSimulation(args):
         # computes the total cost
         cost = get_sum_of_cost(paths)
 
-        result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+        # if saveCVS is set to true write in the a CVS file
+        if saveCVS:
+            result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+        
+
+        # process the file key to get file_key: first element contains map-agent-type, the second elements contains the index
+        file_key = ((file.split("/")[1]).split(".")[0]).split("-idx_")
+        
+        # check if the key is already in the dict, if not, create it
+        if file_key[0] not in results:
+            results[file_key[0]] = np.array((cost, round(time, 6)))
+        # add the simulation results to the corresponding dict
+        else:
+            results[file_key[0]] = np.append(results[file_key[0]], (cost, round(time, 6)))
 
         if not args.batch:
             print("***Test paths on a simulation***")
@@ -171,24 +193,25 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, args):
     for i in range(nb_maps):
         for j in range(2, max_agents):
             for k in range(nb_spawns):
-                print("***Import an instance***")
-                #my_map, starts, goals = import_mapf_instance(file)
-                my_map, starts, goals = generatesSimulation(i,j,k)
-                print_mapf_instance(my_map, starts, goals)
+                for idx in range(100):
+                    print("***Import an instance***")
+                    #my_map, starts, goals = import_mapf_instance(file)
+                    my_map, starts, goals = generatesSimulation(i,j,k)
+                    print_mapf_instance(my_map, starts, goals)
 
-                # get paths and time for the simulation
-                paths, time = processArgs(args, my_map, starts, goals )
+                    # get paths and time for the simulation
+                    paths, time = processArgs(args, my_map, starts, goals )
 
-                # computes the total cost
-                cost = get_sum_of_cost(paths)
+                    # computes the total cost
+                    cost = get_sum_of_cost(paths)
 
-                #result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+                    #result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
 
-                if not args.batch:
-                    print("***Test paths on a simulation***")
-                    animation = Animation(my_map, starts, goals, paths)
-                        # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
-                    animation.show() 
+                    if not args.batch:
+                        print("***Test paths on a simulation***")
+                        animation = Animation(my_map, starts, goals, paths)
+                            # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
+                        animation.show() 
 
 
 def parseArgs():
@@ -205,9 +228,25 @@ def parseArgs():
     args = parser.parse_args()
     return args
 
+
+def processResults(results):
+    for key in results.keys():
+        data = results[key]
+
+        # python slicing: start - stop -step
+        costs = data[::2]
+        plotData(costs)
+        times = data[1::2]
+
+
+def plotData(data):
+    plt.hist(data)
+    plt.show()
+
+
 if __name__ == '__main__':
 
-    #generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
+    # generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1)
     
     args = parseArgs()
     #runSimulation(args)
