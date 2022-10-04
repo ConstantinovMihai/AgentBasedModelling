@@ -12,11 +12,10 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
     elif map_nb == 2:
         map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
 
-    locations = []
     start_locations = []
     goal_locations = []
     # a starting and goal location needs to be created for each agent
-    while len(locations) < nb_agents:        
+    while len(start_locations) < nb_agents:        
         #if agents all spawn on left side of map
         if spawn_type == 0:
             # select a random location in the two left most cells of the map
@@ -48,7 +47,7 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
                 while goal_location in goal_locations:
                     goal_location = [random.choice(range(0, 9)),random.choice([20,21])]
             goal_locations.append((goal_location[0],goal_location[1]))
-        locations.append([start_location[1],start_location[0],goal_location[1],goal_location[0]])
+        
     
     
     # write the results in a file
