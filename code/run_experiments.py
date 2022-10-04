@@ -201,10 +201,10 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args):
     """
     
     for map in range(nb_maps):
-        for agent in range(2, max_agents):
+        for agent in range(6, max_agents):
             for spawn_type in range(nb_spawns):
                 # TODO: IMPLEMENT THE STATISTICAL METHODS HERE
-                for idx in range(100):
+                for idx in range(1):
                     print("***Import an instance***")
                    
                     my_map, starts, goals = generatesSimulation(map, agent, spawn_type)
@@ -227,7 +227,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args):
                         results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
 
 
-                    if not args.batch:
+                    if args.batch:
                         print("***Test paths on a simulation***")
                         animation = Animation(my_map, starts, goals, paths)
                             # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
@@ -265,7 +265,7 @@ def plotData(data):
     plt.show()
 
 def runSimulation():
-    generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, results=results, args=args)
+    generateExperiments(nb_maps=2, max_agents=7, nb_spawns=1, results=results, args=args)
     # save the dicionary
     with open('saved_dictionary.pkl', 'wb') as f:
         pickle.dump(results, f)
@@ -277,8 +277,8 @@ if __name__ == '__main__':
     
     args = parseArgs()
     #runSimulation(args)
-    # results = {}
-    # runSimulation()
+    results = {}
+    runSimulation()
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

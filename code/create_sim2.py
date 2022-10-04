@@ -19,34 +19,35 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
         #if agents all spawn on left side of map
         if spawn_type == 0:
             # select a random location in the two left most cells of the map
-            start_location = [random.choice(range(0, 9)),random.choice([0,1])]   
+            start_location = (random.choice(range(0, 9)),random.choice([0,1]))   
             # if the location is already used generate new location             
             while start_location in start_locations:
-                start_location = [random.choice(range(0, 9)),random.choice([0,1])]                
-            start_locations.append((start_location[0],start_location[1]))
+                start_location = (random.choice(range(0, 9)),random.choice([0,1]))                
+            start_locations.append(start_location)
             # find goal location at opposite side of map
-            goal_location = [random.choice(range(0, 9)),random.choice([20,21])]                
+            goal_location = (random.choice(range(0, 9)),random.choice([20,21]))              
             while goal_location in goal_locations:
-                goal_location = [random.choice(range(0, 9)),random.choice([20,21])]                
-            goal_locations.append((goal_location[0],goal_location[1]))
+                goal_location = (random.choice(range(0, 9)),random.choice([20,21]))          
+            goal_locations.append(goal_location)
         # if agents can spawn on either side of map
         elif spawn_type == 1:
-            start_location = [random.choice(range(0, 9)),random.choice([0,1])]                
+            start_location = (random.choice(range(0, 9)),random.choice([0,1]))              
             while start_location in start_locations:
-                start_location = [random.choice(range(0, 9)),random.choice([0,1])]                
-            start_locations.append((start_location[0],start_location[1]))
+                start_location = (random.choice(range(0, 9)),random.choice([0,1]))               
+            start_locations.append(start_location)
 
             # if agent spawned on left side of map, create goal location on opposite side
             if start_location[1] == 0 or start_location[1] == 1:
-                goal_location = [random.choice(range(0, 9)),random.choice([20,21])]
+                goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
                 while goal_location in goal_locations:
-                    goal_location = [random.choice(range(0, 9)),random.choice([20,21])]
+                    goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
             # if agent spawned on right side of map, create goal location on opposite side
             if start_location[1] == 20 or start_location[1] == 21:
-                goal_location = [random.choice(range(0, 9)),random.choice([0,1])]
+                goal_location = (random.choice(range(0, 9)),random.choice([0,1]))
                 while goal_location in goal_locations:
-                    goal_location = [random.choice(range(0, 9)),random.choice([20,21])]
-            goal_locations.append((goal_location[0],goal_location[1]))
+                    goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
+            goal_locations.append(goal_location)
+        
         
     
     

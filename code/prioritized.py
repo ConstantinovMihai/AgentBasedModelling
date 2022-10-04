@@ -35,7 +35,23 @@ class PrioritizedPlanningSolver(object):
                           i, constraints)
             if path is None:
                 raise BaseException('No solutions')
-            result.append(path)
+            
+            # path needs to be trimmed since constraints added for 200 future time steps will make paths unnecessarily long which will influence total cost
+            trim_length = 0
+            found = False
+            while found == False:
+                if path[-trim_length-1] != path[-trim_length-2]:
+                    found = True
+                else:
+                    trim_length += 1
+
+            path2 = path[:len(path)-trim_length]
+            result.append(path2)
+
+            if len(path)> 400:
+                result = []
+
+            
 
             ##############################
             # Task 2: Add constraints here
@@ -52,7 +68,7 @@ class PrioritizedPlanningSolver(object):
                     for t in range(0,len(path)):
                         # if the last location of that agent, implement constraint for next 200 time steps
                         if  t == len(path)-1:
-                            for constraint_time in range(t,200):
+                            for constraint_time in range(t,400):
                                 constraints.append({'agent': j,'loc': [path[t]],'timestep': constraint_time})
                         # else implement for current time step
                         else:
