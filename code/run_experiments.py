@@ -6,6 +6,7 @@ Note: To make the animation work in Spyder you should set graphics backend to 'A
 
 #!/usr/bin/python
 import argparse
+from cProfile import run
 import glob
 from pathlib import Path
 from cbs import CBSSolver
@@ -14,7 +15,7 @@ from prioritized import PrioritizedPlanningSolver
 from distributed import DistributedPlanningSolver # Placeholder for Distributed Planning
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
-from create_sim import generatesSimulation
+from create_sim2 import generatesSimulation
 
 SOLVER = "CBS"
 
@@ -104,6 +105,7 @@ def import_mapf_instance(filename):
         starts.append((sx, sy))
         goals.append((gx, gy))
     f.close()
+
     return my_map, starts, goals
 
 
@@ -136,12 +138,13 @@ def processArgs(args, my_map, starts, goals ):
 
 def runSimulation(args):
     result_file = open("results.csv", "w", buffering=1)
-
+    """
     # iterates among all the files 
     for file in sorted(glob.glob(args.instance)):
 
         print("***Import an instance***")
-        my_map, starts, goals = import_mapf_instance(file)
+        #my_map, starts, goals = import_mapf_instance(file)
+        my_map, starts, goals = generatesSimulation(0,3,0)
         print_mapf_instance(my_map, starts, goals)
 
         # get paths and time for the simulation
@@ -158,16 +161,34 @@ def runSimulation(args):
             # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
             animation.show()
 
-    result_file.close()
+    result_file.close()"""
+    
 
 
-def generateExperiments(nb_maps, max_agents, nb_spawns):
+def generateExperiments(nb_maps, max_agents, nb_spawns, args):
     """ Iterates through the number of agents to pass 
     """
     for i in range(nb_maps):
-        for j in range(1, max_agents):
+        for j in range(2, max_agents):
             for k in range(nb_spawns):
-                   generatesSimulation(i, j, k) 
+                print("***Import an instance***")
+                #my_map, starts, goals = import_mapf_instance(file)
+                my_map, starts, goals = generatesSimulation(i,j,k)
+                print_mapf_instance(my_map, starts, goals)
+
+                # get paths and time for the simulation
+                paths, time = processArgs(args, my_map, starts, goals )
+
+                # computes the total cost
+                cost = get_sum_of_cost(paths)
+
+                #result_file.write("{},{},{}\n".format(file, cost, round(time, 6)))
+
+                if not args.batch:
+                    print("***Test paths on a simulation***")
+                    animation = Animation(my_map, starts, goals, paths)
+                        # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
+                    animation.show() 
 
 
 def parseArgs():
@@ -189,5 +210,6 @@ if __name__ == '__main__':
     #generateExperiments(nb_maps=3, max_agents=10, nb_spawns=2)
     
     args = parseArgs()
-    runSimulation(args)
+    #runSimulation(args)
+    generateExperiments(2, 3, 1, args)
     

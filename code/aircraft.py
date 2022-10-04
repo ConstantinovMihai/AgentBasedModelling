@@ -20,3 +20,5 @@ class AircraftDistributed(object):
         self.goal = goal
         self.id = agent_id
         self.heuristics = heuristics
+
+    
