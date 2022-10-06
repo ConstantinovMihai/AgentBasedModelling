@@ -3,7 +3,17 @@ import random
 
 random.seed(421)
 #function which generates the input file for simulation depending on the desired map, number if agents and spawn type
-def generatesSimulation(map_nb,nb_agents,spawn_type):
+def createsSimulationInput(map_nb,nb_agents,spawn_type):
+    """ creates the simulation input based on the map, number of agents and the spawn type
+
+    Args:
+        map_nb (int): the map type number
+        nb_agents (int): the number of agents to be created during the simulation
+        spawn_type (int): index of the spawn type
+
+    Returns:
+        list, list, list: the map with the obstacles, the list of start locations for the agents, the list of goal locations for the agents 
+    """
     #the three types of maps which are of interest    
     if map_nb == 0:
         map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
@@ -47,7 +57,8 @@ def generatesSimulation(map_nb,nb_agents,spawn_type):
                 while goal_location in goal_locations:
                     goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
             goal_locations.append(goal_location)
-        
+    
+    assert(len(start_locations) == len(goal_locations))
     return map, start_locations, goal_locations
 
 
