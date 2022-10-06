@@ -187,6 +187,42 @@ def runSimulation(args, results, saveCVS = False):
     result_file.close()
     
 
+def testPathSimulation(args, my_map, starts, goals, paths):
+    if not args.batch:
+        print("***Test paths on a simulation***")
+        animation = Animation(my_map, starts, goals, paths)
+            # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
+        animation.show() 
+
+
+def runOneExperiment(map, agent, spawn_type, results):
+    """ Runs on experiment for a certain instance
+
+    Args:
+        map (_type_): _description_
+        agent (_type_): _description_
+        spawn_type (_type_): _description_
+        results (_type_): _description_
+    """
+    my_map, starts, goals = generatesSimulation(map, agent, spawn_type)
+                    
+    # get paths and time for the simulation
+    paths, time = processArgs(args, my_map, starts, goals )
+
+    # computes the total cost
+    cost = get_sum_of_cost(paths)
+
+    # process the file key to get file_key: first element contains map-agent-type, the second elements contains the index
+    file_key = f"map_{map}-agent_{agent}-spawn_{spawn_type}"
+    # check if the key is already in the dict, if not, create it
+    if file_key not in results:
+        results[file_key] = np.array((cost, round(time, 6)))
+    # add the simulation results to the corresponding dict
+    else:
+        results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
+
+    testPathSimulation(args, my_map, starts, goals, paths)
+
 
 def generateExperiments(nb_maps, max_agents, nb_spawns, results, args):
     """_summary_
@@ -197,41 +233,38 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args):
         nb_spawns (_type_): _description_
         results (_type_): description
         args (_type_): _description_
-        saveCVS (bool, optional): _description_. Defaults to False.
     """
-    
     for map in range(nb_maps):
         for agent in range(2, max_agents):
             for spawn_type in range(nb_spawns):
                 # TODO: IMPLEMENT THE STATISTICAL METHODS HERE
-                for idx in range(100):
-                    print("***Import an instance***")
-                   
-                    my_map, starts, goals = generatesSimulation(map, agent, spawn_type)
-                    print_mapf_instance(my_map, starts, goals)
+                key = f"map_{map}-agent_{agent}-spawn_{spawn_type}"
+                variation_cost = [0]
+                variation_time = [0]
 
-                    # get paths and time for the simulation
-                    paths, time = processArgs(args, my_map, starts, goals )
+                # condition for stopping to iterate:
+                # if the current variation coefficient is within a half of a standard deviation from
+                # the mean of the last quarter of the simulations
+                while (len(variation_time) < 50 or (np.std(variation_time[-30:]) < 0.5 * np.mean(variation_time[-30:]))
+                    or (np.std(variation_cost[-30:]) < 0.5 * np.mean(variation_cost[-30:]))):
+                    print(f"len(variation_time) IS {len(variation_time)}")
+                    runOneExperiment(map, agent, spawn_type, results)
+                    data = results[key]
+                    variation_cost = data[::2]
+                    variation_time = data[1::2]
+                    # the variation coefficient = standard deviation / mean
+                    variation_cost = np.append(variation_cost, np.std(data[::2]) / np.mean(data[::2]))
+                    variation_time = np.append(variation_time, np.std(data[1::2]) / np.mean(data[1::2]))
+                    if (len(variation_time) == 150):
+                        break
 
-                    # computes the total cost
-                    cost = get_sum_of_cost(paths)
+                print(f"len of variation is {len( variation_time)}")
+                x = np.arange(len(variation_time))
+                plt.plot(x, variation_time)
+                plt.xlabel("iteration")
+                plt.ylabel("coefficient of variation for time")
+                plt.show()
 
-                    # process the file key to get file_key: first element contains map-agent-type, the second elements contains the index
-                    file_key = f"map_{map}-agent_{agent}-spawn-{spawn_type}"
-                    
-                    # check if the key is already in the dict, if not, create it
-                    if file_key not in results:
-                        results[file_key] = np.array((cost, round(time, 6)))
-                    # add the simulation results to the corresponding dict
-                    else:
-                        results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
-
-
-                    if not args.batch:
-                        print("***Test paths on a simulation***")
-                        animation = Animation(my_map, starts, goals, paths)
-                            # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
-                        animation.show() 
 
 
 
@@ -256,15 +289,27 @@ def processResults(results):
 
         # python slicing: start - stop -step
         costs = data[::2]
-        plotData(costs)
+      
         times = data[1::2]
+        plotData(times)
 
 
 def plotData(data):
+    """ Plotting routine
+
+    Args:
+        data (_type_): _description_
+    """
+    #TODO: Improve
+
     plt.hist(data)
     plt.show()
 
-def runSimulation():
+
+def runSimulation(args):
+    """ Runs the experiments and saves the results in a pickle structure
+    """
+
     generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, results=results, args=args)
     # save the dicionary
     with open('saved_dictionary.pkl', 'wb') as f:
@@ -276,14 +321,14 @@ if __name__ == '__main__':
     # generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1)
     
     args = parseArgs()
-    #runSimulation(args)
-    # results = {}
-    # runSimulation()
+    results = {}
+
+    runSimulation(args)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:
         results = pickle.load(f)
     
-    print(results.keys())
+    # print(results.keys())
 
     processResults(results)
