@@ -139,7 +139,7 @@ def processArgs(args, my_map, starts, goals ):
     return paths, time
 
 
-def runSimulation(args, results, saveCVS = False):
+def runSimulation(args, results, saveCVS = False): # NO LONGER USED
     """Runs the simulation using the provided args and either stores the data or puts in the results dictionary 
 
     Args:
@@ -328,7 +328,10 @@ if __name__ == '__main__':
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:
         results = pickle.load(f)
+
     
     # print(results.keys())
 
     processResults(results)
+
+    

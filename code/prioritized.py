@@ -33,9 +33,30 @@ class PrioritizedPlanningSolver(object):
         for i in range(self.num_of_agents):  # Find path for each agent
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, constraints)
+            # if no solution is found for this agent, return an empty list and do not attempt to solve for future agents
+            # the empty list is used to detect that A* could not find solutions
             if path is None:
-                raise BaseException('No solutions')
-            result.append(path)
+                result = []
+                break
+            else:            
+            # path needs to be trimmed since constraints added for 200 future time steps will make paths unnecessarily long which will influence total cost
+            # paths where agent stays at same location for the remainder of time are trimmed
+                trim_length = 0
+                found = False
+                while found == False:
+                    if path[-trim_length-1] != path[-trim_length-2]:
+                        found = True
+                    else:
+                        trim_length += 1
+
+                path2 = path[:len(path)-trim_length]
+                result.append(path2)
+                # if the length of the path is very large, as agent has to wait very long, it is assumed no solution can be found and an empty list is returned
+                if len(path)> 100:
+                    result = []
+                    break
+
+            
 
             ##############################
             # Task 2: Add constraints here
@@ -52,7 +73,7 @@ class PrioritizedPlanningSolver(object):
                     for t in range(0,len(path)):
                         # if the last location of that agent, implement constraint for next 200 time steps
                         if  t == len(path)-1:
-                            for constraint_time in range(t,200):
+                            for constraint_time in range(t,100):
                                 constraints.append({'agent': j,'loc': [path[t]],'timestep': constraint_time})
                         # else implement for current time step
                         else:
