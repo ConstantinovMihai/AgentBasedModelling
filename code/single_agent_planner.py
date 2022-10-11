@@ -136,11 +136,11 @@ def pop_node(open_list):
 
 
 def compare_nodes(n1, n2):
-    """Return true is n1 is better than n2."""
+    """Return true if n1 is better than n2."""
     return n1['g_val'] + n1['h_val'] < n2['g_val'] + n2['h_val']
 
 
-def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
+def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, distributed = False):
     """ my_map      - binary obstacle map
         start_loc   - start position
         goal_loc    - goal position
@@ -158,10 +158,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     h_value = h_values[start_loc]
     
     # build constraint table for this agent
-    indexed_constraint_table = build_constraint_table(constraints, agent)   
+    indexed_constraint_table = build_constraint_table(constraints, agent)
+    
     
 
-    root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 't_step':0}
+    root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 't_step':time}
     push_node(open_list, root)
     closed_list[(root['loc'],root['t_step'])] = root
     while len(open_list) > 0:
@@ -169,8 +170,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
         #############################
         # Task 1.4: Adjust the goal test condition to handle goal constraints
 
-        # if agent has reached goal location and there are no constraints posed on agent at a later time:        
-        if curr['loc'] == goal_loc and len(get_path(curr)) >= len(indexed_constraint_table):
+        # if agent has reached goal location and there are no constraints posed on agent at a later time:
+        # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
+        if curr['loc'] == goal_loc and len(get_path(curr)) >= len(indexed_constraint_table) and distributed == False:
+            return get_path(curr)
+        elif curr['loc'] == goal_loc and distributed == True:
             return get_path(curr)
         for dir in range(5):
             child_loc = move(curr['loc'], dir)            

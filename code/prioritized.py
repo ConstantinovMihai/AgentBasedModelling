@@ -31,6 +31,7 @@ class PrioritizedPlanningSolver(object):
         constraints = []      
         
         for i in range(self.num_of_agents):  # Find path for each agent
+            
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, constraints)
             # if no solution is found for this agent, return an empty list and do not attempt to solve for future agents

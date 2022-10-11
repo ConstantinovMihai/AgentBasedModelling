@@ -47,7 +47,7 @@ class DistributedPlanningSolverIndividual(object):
         return reached_goal
 
 
-    def radarScanner(self, start_agent, agents, radar_radius = 5):
+    def radarScanner(self, start_agent, agents, radar_radius = 4):
         """ Starting from the start agent, it scans the map and finds all agents (and their locations) within a fixed radius distance
 
         Args:
@@ -75,8 +75,11 @@ class DistributedPlanningSolverIndividual(object):
             if agent.id != start_agent.id:
                 # compute the distance between the starting agent and all the others, and store the locations of the ones
                 #  who are in the proximity of the starting agent (distance < radius)
-                if distanceAgents(start_agent.location, agent.location) < radar_radius:
-                    prox_loc.append(agent.location)
+                # along with location, radar returns whether agent has reached its goal or not
+                if distanceAgents(start_agent.location, agent.location) < radar_radius and agent.location == agent.goal:
+                    prox_loc.append({'location':agent.location,'reached_goal':True})
+                elif distanceAgents(start_agent.location, agent.location) < radar_radius:
+                    prox_loc.append({'location':agent.location,'reached_goal':False})
 
         return prox_loc
 
@@ -98,27 +101,38 @@ class DistributedPlanningSolverIndividual(object):
         # Create agent objects with AircraftDistributed class
         for i in range(self.num_of_agents):
             newAgent = AircraftDistributed(self.my_map, self.starts[i], self.goals[i], self.heuristics[i], i)
+            
             agents.append(newAgent)
 
         # this stores the paths for each agent (this time we'll append the results with one location at a time)
         result = []
 
+        # start location of agents need to be added to paths
+        for agent in agents:
+            agent.path.append(agent.start)
+
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)):
+           
             # iterate for each agent
+            # create constraints which will be used to run planning for each agent
             for agent in agents:
+                
                 # stores the locations of nearby agents
                 prox_loc = self.radarScanner(agent, agents)
+                
                 # generates constraints using the prox_loc and the bubble method
                 agent.addBubbleConstraints(self.time, prox_loc)
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent, agent.constraints)
-                # if there is no path it means there are no solutions
-                if path is None:
-                    raise BaseException('No solutions')
-                # the next location of the agent is stored as the second element in the path planned by A* (element zeroth is the current location)
                 
-                print(f"PATH IS {path}")
-                if (len(path) > 1):
+            # run planning for each agent
+            for agent in agents:                
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
+                
+                # if there is no path, agent waits at current location
+                if path is None:                    
+                    agent.path.append(agent.location)
+                # the next location of the agent is stored as the second element in the path planned by A* (element zeroth is the current location)
+                elif (len(path) > 1):
                     agent.location = path[1]
                     agent.path.append(path[1])
                 else: # the agent reached its goal

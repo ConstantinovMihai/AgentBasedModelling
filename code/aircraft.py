@@ -34,12 +34,24 @@ class AircraftDistributed(object):
             prox_loc (list) : the locations at which other agents are (and have to be avoided)
         """
 
-        # iterate among each proximum agent 
+        # iterate among each proximum agent
+        self.constraints = []
         for neighbour in prox_loc:
-            bubble =  [(0, -1), (1, 0), (0, 1), (-1, 0), (0, 0)]
-            # iterates among the bubble_locations (i.e. the places the agent might go in the next iteration)
-            # TODO: accomodate for the sitaution when more than one move might be performed between two path computations
-            for move in bubble:
-                constr_loc = neighbour[0] + move[0], neighbour[1] + move[1]
-                self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time})
+            # the bubble constraints are only added, if the agent has not reached its goal and thus is likely to move in the next timestep, otherwise only the agents current (goal/final) location is stored as a constraint
+            if neighbour['reached_goal'] == False:
+                bubble =  [(0, -1), (1, 0), (0, 1), (-1, 0), (0, 0)]
+                # iterates among the bubble_locations (i.e. the places the agent might go in the next iteration)
+                # TODO: accomodate for the sitaution when more than one move might be performed between two path computations
+                for move in bubble:
+                    constr_loc = neighbour['location'][0] + move[0], neighbour['location'][1] + move[1]
+                    # add the constraint for the next x timesteps to motivate agent to take another path
+                    for t in range (0,10):
+                        self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time+t})
+            else:
+                constr_loc = neighbour['location'][0], neighbour['location'][1]
+                for t in range (0,10):
+                    self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time+t})
+
+
+
     
