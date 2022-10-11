@@ -116,8 +116,16 @@ class DistributedPlanningSolverIndividual(object):
                 if path is None:
                     raise BaseException('No solutions')
                 # the next location of the agent is stored as the second element in the path planned by A* (element zeroth is the current location)
-                agent.location = path[1]
-                agent.path.append(path[1])
+                
+                print(f"PATH IS {path}")
+                if (len(path) > 1):
+                    agent.location = path[1]
+                    agent.path.append(path[1])
+                else: # the agent reached its goal
+                    agent.location = path[0]
+                    agent.path.append(path[0])
+                
+                
             # increment time
             self.time += 1
 

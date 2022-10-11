@@ -8,7 +8,7 @@ Note: To make the animation work in Spyder you should set graphics backend to 'A
 import argparse
 from cProfile import run
 import glob
-from distributed import DistributedPlanningSolver # Placeholder for Distributed Planning
+from distributed_individual import DistributedPlanningSolverIndividual # Placeholder for Distributed Planning
 from visualize import Animation
 from single_agent_planner import get_sum_of_cost
 from create_sim2 import createsSimulationInput
@@ -104,7 +104,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                     # those are to be computed for the entire data set
                     variation_cost = np.append(variation_cost, np.std(valid_costs) / np.mean(valid_costs))
                     variation_time = np.append(variation_time, np.std(valid_times) / np.mean((valid_times)))
-                    
+                    #TODO: remove this later when we re sure the implementation is not stucked 
                     if (len(variation_time) == 200):
                         break
                 
@@ -133,9 +133,20 @@ def runSimulation(args):
         pickle.dump(results, f)
 
 
-def testExistingMaps():
+def testExistingMaps(args):
     """ This function runs the algos on existings maps
+    map (int): maximum number of maps in all simulations
+    agents (int): maximum number of agents in all the simulations
+    spawn (int): maximum number of spawn types (usually, there will be only 2 options)
+    results (dict): stores the results for the iterations for each experimental instance
     """
+    
+    my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
+    my_map = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]]
+    starts = [(0,1),(0,0)]
+    goals = [(0,0),(3,2)]
+    paths, time = utilities.processArgs(args, my_map, starts, goals )
+    testPathSimulation(args, my_map, starts, goals, paths)
     pass
 
 if __name__ == '__main__':
@@ -143,7 +154,9 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
     results = {}
 
-    runSimulation(args)
+    testExistingMaps(args)
+
+    #runSimulation(args)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

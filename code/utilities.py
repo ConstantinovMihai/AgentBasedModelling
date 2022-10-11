@@ -4,7 +4,7 @@ from cbs import CBSSolver
 from independent import IndependentSolver
 from prioritized import PrioritizedPlanningSolver
 from pathlib import Path
-from distributed import DistributedPlanningSolver
+from distributed_individual import DistributedPlanningSolverIndividual
 
 SOLVER = "CBS"
 
@@ -133,7 +133,7 @@ def processArgs(args, my_map, starts, goals ):
         paths, time = solver.find_solution()
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
         print("***Run Distributed Planning***")
-        solver = DistributedPlanningSolver(my_map, starts, goals, ...) #!!!TODO: add your own distributed planning implementation here.
+        solver = DistributedPlanningSolverIndividual(my_map, starts, goals) #!!!TODO: add your own distributed planning implementation here.
         paths, time = solver.find_solution()
     else: 
         raise RuntimeError("Unknown solver!")
