@@ -9,6 +9,8 @@ from single_agent_planner import compute_heuristics, a_star, get_sum_of_cost
 from aircraft import AircraftDistributed
 from cbs import detect_collision, detect_collisions
 
+class DistributedPlanningSolverIndividual(object):
+
 class DistributedPlanningSolver(object):
     """A distributed planner"""
 

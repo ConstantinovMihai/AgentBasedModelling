@@ -112,6 +112,9 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                     print(f"len of variation is {len( variation_time)}")
                 x = np.arange(len(variation_time))
 
+                np.savetxt('validtimes.txt', valid_times, delimiter=',')
+                np.savetxt('variation_time.txt', variation_time, delimiter=',')
+
                 # plot of the costs&times
                 plt.plot(x, variation_cost, color="red", label="cost")
                 plt.plot(x, variation_time, color="green", label="time")
