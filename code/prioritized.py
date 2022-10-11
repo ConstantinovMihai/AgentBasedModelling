@@ -71,7 +71,8 @@ class PrioritizedPlanningSolver(object):
                 for path in result:
                     # for each location of previous agents
                     for t in range(0,len(path)):
-                        # if the last location of that agent, implement constraint for next 200 time steps
+                        # TODO: PROPERLY DOCUMENT THIS PART OF THE CODE 
+                        # if the last location of that agent, implement constraint for next 100 time steps
                         if  t == len(path)-1:
                             for constraint_time in range(t,100):
                                 constraints.append({'agent': j,'loc': [path[t]],'timestep': constraint_time})

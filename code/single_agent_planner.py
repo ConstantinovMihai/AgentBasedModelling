@@ -144,7 +144,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     """ my_map      - binary obstacle map
         start_loc   - start position
         goal_loc    - goal position
-        agent       - the agent that is being re-planned
+        agent       - the ID of the agent that is being re-planned
         constraints - constraints defining where robot should or cannot go at each timestep
     """
 

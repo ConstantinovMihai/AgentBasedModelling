@@ -20,5 +20,26 @@ class AircraftDistributed(object):
         self.goal = goal
         self.id = agent_id
         self.heuristics = heuristics
+        # list with the constraints for the agent
+        self.constraints = []
+        self.location = start
+        # stores the path to goal
+        self.path = []
 
+    def addBubbleConstraints(self, time, prox_loc):
+        """ Add the bubble constraints for the agent (i.e. the locations of the neighbouring agents + a bubble around them) 
+
+        Args:
+            time (int): the time at which the constraints are added
+            prox_loc (list) : the locations at which other agents are (and have to be avoided)
+        """
+
+        # iterate among each proximum agent 
+        for neighbour in prox_loc:
+            bubble =  [(0, -1), (1, 0), (0, 1), (-1, 0), (0, 0)]
+            # iterates among the bubble_locations (i.e. the places the agent might go in the next iteration)
+            # TODO: accomodate for the sitaution when more than one move might be performed between two path computations
+            for move in bubble:
+                constr_loc = neighbour[0] + move[0], neighbour[1] + move[1]
+                self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time})
     

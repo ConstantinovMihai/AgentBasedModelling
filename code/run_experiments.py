@@ -133,6 +133,11 @@ def runSimulation(args):
         pickle.dump(results, f)
 
 
+def testExistingMaps():
+    """ This function runs the algos on existings maps
+    """
+    pass
+
 if __name__ == '__main__':
         
     args = utilities.parseArgs()
