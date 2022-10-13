@@ -8,23 +8,10 @@ import time as timer
 from single_agent_planner import compute_heuristics, a_star, get_sum_of_cost
 from aircraft import AircraftDistributed
 from cbs import detect_collision, detect_collisions
+from distributed_class import DistributedPlanning
 
-
-class DistributedPlanningSolver(object):
+class DistributedPlanningSolver(DistributedPlanning):
     """A distributed planner"""
-
-    def __init__(self, my_map, starts, goals):
-        """my_map   - list of lists specifying obstacle positions
-        starts      - [(x1, y1), (x2, y2), ...] list of start locations
-        goals       - [(x1, y1), (x2, y2), ...] list of goal locations
-        """
-        self.CPU_time = 0
-        self.my_map = my_map
-        self.starts = starts
-        self.goals = goals
-        self.num_of_agents = len(goals)
-        self.heuristics = []
-        # T.B.D.
         
     def find_solution(self):
         """
