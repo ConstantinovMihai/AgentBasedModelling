@@ -41,7 +41,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             agent.path.append(agent.start)
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)):
+        #TODO REMOVE <100
+        while not all(self.goalsReached(agents)) and self.time < 500:
            
             # iterate for each agent
             # create constraints which will be used to run planning for each agent
@@ -54,19 +55,69 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 agent.addBubbleConstraints(self.time, prox_loc)
                 
             # run planning for each agent
-            for agent in agents:                
+            for agent in agents:
+                agent.planned_path = []
+                
+                
+                wait_time = 0
+                found = False
+                while found == False:
+                    
+                    if wait_time+1 >= len(agent.path):
+                        found = True
+                    else:
+                        if agent.path[-wait_time-1] != agent.path[-wait_time-2]:
+                            found = True
+                        else:
+                            wait_time += 1 
+
+                #agent.heuristics = compute_heuristics(agent.my_map, agent.goal)
+                for constraint in agent.constraints:
+                    if constraint['loc'][0] in agent.heuristics:
+                        if constraint['hard']:
+                            agent.heuristics[constraint['loc'][0]] += 50
+                        else:
+                            agent.heuristics[constraint['loc'][0]] += 3
+                
+                agent.heuristics[agent.path[-1]] += (wait_time)         
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
+                    
                 
                 # if there is no path, agent waits at current location
                 if path is None:                    
-                    agent.path.append(agent.location)
+                    agent.planned_path.append(agent.location)
                 # the next location of the agent is stored as the second element in the path planned by A* (element zeroth is the current location)
                 elif (len(path) > 1):
-                    agent.location = path[1]
-                    agent.path.append(path[1])
+                    #agent.location = path[1]                    
+                    agent.planned_path = path[1:3]
                 else: # the agent reached its goal
-                    agent.location = path[0]
-                    agent.path.append(path[0])
+                    #agent.location = path[0]
+                    agent.planned_path = path
+             
+
+            next_locations = []
+            for agent in agents:
+                next_locations.append([agent.planned_path[0]])
+  
+            collisions = detect_collisions(next_locations)
+                       
+
+            for agent in agents:
+                collided = False
+                for collision in collisions:                
+                    if agent.id == collision['a1']:
+                        agent.path.append(agent.location)
+                        collided = True
+
+                if not collided:
+                    agent.path.append(agent.planned_path[0])
+                    agent.location = agent.planned_path[0]
+            
+            # for agent in agents:
+            #     agent.location = agent.planned_path[0]
+            #     agent.path.append(agent.planned_path[0])
+
+            
                 
                 
             # increment time
@@ -74,7 +125,22 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # when everything is done, store the final paths in the results 
         for agent in agents:
-            result.append(agent.path)
+          
+            trim_length = 0
+            found = False
+            while found == False:
+               
+                if trim_length +1 == len(agent.path):
+                    found = True
+                    continue
+                if agent.path[-trim_length-1] != agent.path[-trim_length-2]:
+                    found = True
+                else:
+                    trim_length += 1
+
+            path2 = agent.path[:len(agent.path)-trim_length].copy()
+
+            result.append(path2)
 
         self.CPU_time = timer.time() - start_time
 
