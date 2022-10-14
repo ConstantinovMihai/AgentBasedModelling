@@ -10,7 +10,7 @@ from cProfile import run
 import glob
 from distributed_individual import DistributedPlanningSolverIndividual # Placeholder for Distributed Planning
 from visualize import Animation
-from single_agent_planner import get_sum_of_cost
+from single_agent_planner import getSumOfCost
 from create_sim2 import createsSimulationInput
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,7 +42,7 @@ def runOneExperiment(map, agent, spawn_type, results):
     paths, time = utilities.processArgs(args, my_map, starts, goals )
 
     # computes the total cost
-    cost = get_sum_of_cost(paths)
+    cost = getSumOfCost(paths)
 
     # process the file key to get file_key: first element contains map-agent-type, the second elements contains the index
     file_key = f"map_{map}-agent_{agent}-spawn_{spawn_type}"

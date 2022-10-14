@@ -7,14 +7,14 @@ def move(loc, dir):
     return loc[0] + directions[dir][0], loc[1] + directions[dir][1]
 
 
-def get_sum_of_cost(paths):
+def getSumOfCost(paths):
     rst = 0
     for path in paths:
         rst += len(path) - 1
     return rst
 
 
-def compute_heuristics(my_map, goal):
+def computeHeuristics(my_map, goal):
     # Use Dijkstra to build a shortest-path tree rooted at the goal location
     open_list = []
     closed_list = dict()
@@ -49,7 +49,7 @@ def compute_heuristics(my_map, goal):
     return h_values
 
 
-def build_constraint_table(constraints, agent):
+def buildConstraintTable(constraints, agent):
     ##############################
     # Task 1.2/1.3: Return a table that constains the list of constraints of
     #               the given agent for each time step. The table can be used
@@ -82,7 +82,7 @@ def build_constraint_table(constraints, agent):
     return indexed_constraint_table
 
 
-def get_location(path, time):
+def getLocation(path, time):
     if time < 0:
         return path[0]
     elif time < len(path):
@@ -91,7 +91,7 @@ def get_location(path, time):
         return path[-1]  # wait at the goal location
 
 
-def get_path(goal_node):
+def getPath(goal_node):
     path = []
     curr = goal_node
     while curr is not None:
@@ -101,7 +101,7 @@ def get_path(goal_node):
     return path
 
 
-def is_constrained(curr_loc, next_loc, next_time, constraint_table):
+def isConstrained(curr_loc, next_loc, next_time, constraint_table):
     ##############################
     # Task 1.2/1.3: Check if a move from curr_loc to next_loc at time step next_time violates
     #               any given constraint. For efficiency the constraints are indexed in a constraint_table
@@ -126,16 +126,16 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     return constrained
 
 
-def push_node(open_list, node):
+def pushNode(open_list, node):
     heapq.heappush(open_list, (node['g_val'] + node['h_val'], node['h_val'], node['loc'], node))
 
 
-def pop_node(open_list):
+def popNode(open_list):
     _, _, _, curr = heapq.heappop(open_list)
     return curr
 
 
-def compare_nodes(n1, n2):
+def compareNodes(n1, n2):
     """Return true if n1 is better than n2."""
     return n1['g_val'] + n1['h_val'] < n2['g_val'] + n2['h_val']
 
@@ -158,31 +158,31 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
     h_value = h_values[start_loc]
     
     # build constraint table for this agent
-    indexed_constraint_table = build_constraint_table(constraints, agent)
+    indexed_constraint_table = buildConstraintTable(constraints, agent)
     
     
 
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 't_step':time}
-    push_node(open_list, root)
+    pushNode(open_list, root)
     closed_list[(root['loc'],root['t_step'])] = root
     while len(open_list) > 0:
-        curr = pop_node(open_list)
+        curr = popNode(open_list)
         #############################
         # Task 1.4: Adjust the goal test condition to handle goal constraints
 
         # if agent has reached goal location and there are no constraints posed on agent at a later time:
         # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
-        if curr['loc'] == goal_loc and len(get_path(curr)) >= len(indexed_constraint_table) and distributed == False:
-            return get_path(curr)
+        if curr['loc'] == goal_loc and len(getPath(curr)) >= len(indexed_constraint_table) and distributed == False:
+            return getPath(curr)
         elif curr['loc'] == goal_loc and distributed == True:
-            return get_path(curr)
+            return getPath(curr)
         for dir in range(5):
             child_loc = move(curr['loc'], dir)            
             # if child location is outside of map
             if child_loc[0] < 0 or child_loc[1] < 0 or child_loc[0] >= len(my_map) or child_loc[1] >= len(my_map[0]):
                 continue
             # if child location is a blocked cell or the cell is constrained
-            if my_map[child_loc[0]][child_loc[1]] or is_constrained(curr['loc'], child_loc, curr['t_step']+1, indexed_constraint_table): 
+            if my_map[child_loc[0]][child_loc[1]] or isConstrained(curr['loc'], child_loc, curr['t_step']+1, indexed_constraint_table): 
                 continue            
     
             child = {'loc': child_loc,
@@ -194,11 +194,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
             
             if (child['loc'],child['t_step']) in closed_list :
                 existing_node = closed_list[(child['loc'],child['t_step'])]
-                if compare_nodes(child, existing_node):
+                if compareNodes(child, existing_node):
                     closed_list[(child['loc'],child['t_step'])] = child
-                    push_node(open_list, child)
+                    pushNode(open_list, child)
             else:
                 closed_list[(child['loc'],child['t_step'])] = child
-                push_node(open_list, child)
+                pushNode(open_list, child)
 
     return None  # Failed to find solutions

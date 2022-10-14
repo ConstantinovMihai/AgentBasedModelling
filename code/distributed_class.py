@@ -5,10 +5,10 @@ This file contains the implemention of distributed planning WITHOUT COORDINATION
 import re
 import numpy as np
 import time as timer
-from single_agent_planner import compute_heuristics, a_star, get_sum_of_cost
+from single_agent_planner import computeHeuristics, a_star, getSumOfCost
 from aircraft import AircraftDistributed
-from cbs import detect_collision, detect_collisions
-from single_agent_planner import is_constrained, build_constraint_table
+from cbs import detectCollision, detectCollisions
+from single_agent_planner import isConstrained, buildConstraintTable
 
 
 class DistributedPlanning(object):
@@ -33,7 +33,7 @@ class DistributedPlanning(object):
         self.locations = starts
 
         for goal in self.goals:
-            self.heuristics.append(compute_heuristics(my_map, goal))
+            self.heuristics.append(computeHeuristics(my_map, goal))
 
         self.time = 0 # this is going to incrementaly increase and decisions are going to be made at each timestep
     
@@ -44,10 +44,10 @@ class DistributedPlanning(object):
             agent (AircraftDistributed): the agent object 
         """
         # build constraint table for this agent
-        indexed_constraint_table = build_constraint_table(agent.constraints, agent.id)
+        indexed_constraint_table = buildConstraintTable(agent.constraints, agent.id)
         for idx, loc in enumerate(path):
             if idx < len(path) - 1:
-                if is_constrained(loc, path[idx + 1], self.time + idx, indexed_constraint_table):
+                if isConstrained(loc, path[idx + 1], self.time + idx, indexed_constraint_table):
                     return True
         # no constraints in the way 
         return False
@@ -102,3 +102,49 @@ class DistributedPlanning(object):
                     prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False})
 
         return prox_loc
+
+    def initialiseAgents(self):
+        """ Create agent objects with AircraftDistributed class
+        """
+        agents = []
+
+        for i in range(self.num_of_agents):
+            newAgent = AircraftDistributed(self.my_map, self.starts[i], self.goals[i], self.heuristics[i], i)
+            agents.append(newAgent)
+        
+        # start location of agents need to be added to paths
+        for agent in agents:
+            agent.path.append(agent.start)
+
+        return agents 
+
+
+    def waitingTime(self, agent):
+        """ Computes how many timesteps an agent has been waiting
+        Args: agent (AircraftDistributed) : the agent object
+        Returns the total time spent waiting (int)
+        """
+        wait_time = 0
+        while True:
+            # if an agent starts at its goal and just stays there
+            if wait_time + 1 >= len(agent.path):
+                break
+            # if an agent's location at a time step is different than the location at the prev timestep, break
+            if agent.path[-wait_time-1] != agent.path[-wait_time-2]:
+                break
+            else:
+                wait_time += 1 
+
+        return wait_time 
+
+
+
+    def printResult(self, result):
+        """ Prints the total cost of the simulation, as well as info about the CPU time
+
+        Args:
+            results (int): total cost of the simulation
+        """
+        print("\n Found a solution! \n")
+        print("CPU time (s):    {:.2f}".format(self.CPU_time))
+        print("Sum of costs:    {}".format(getSumOfCost(result)))

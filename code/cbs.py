@@ -1,10 +1,10 @@
 import time as timer
 import heapq
 import random
-from single_agent_planner import compute_heuristics, a_star, get_location, get_sum_of_cost, push_node
+from single_agent_planner import computeHeuristics, a_star, getLocation, getSumOfCost, pushNode
 
 
-def detect_collision(path1, path2):
+def detectCollision(path1, path2):
     ##############################
     # Task 3.1: Return the first collision that occurs between two robot paths (or None if there is no collision)
     #           There are two types of collisions: vertex collision and edge collision.
@@ -15,15 +15,15 @@ def detect_collision(path1, path2):
     # for each timestep in longest path
     for ts in range(max(len(path2),len(path1))):
         # identify vertex collision
-        if get_location(path1, ts) == get_location(path2, ts):
-            return [get_location(path1, ts)], ts
+        if getLocation(path1, ts) == getLocation(path2, ts):
+            return [getLocation(path1, ts)], ts
         # identify edge collisions if one of the agents is still moving
-        elif get_location(path1, ts-1) == get_location(path2, ts) and get_location(path2, ts-1) == get_location(path1, ts) and ts -1 < min(len(path2),len(path1)):
-            return [get_location(path1, ts),get_location(path2, ts)], ts
+        elif getLocation(path1, ts-1) == getLocation(path2, ts) and getLocation(path2, ts-1) == getLocation(path1, ts) and ts -1 < min(len(path2),len(path1)):
+            return [getLocation(path1, ts),getLocation(path2, ts)], ts
     return None
 
 
-def detect_collisions(paths):
+def detectCollisions(paths):
     ##############################
     # Task 3.1: Return a list of first collisions between all robot pairs.
     #           A collision can be represented as dictionary that contains the id of the two robots, the vertex or edge
@@ -35,8 +35,8 @@ def detect_collisions(paths):
         # compare path with subsequent paths
         for j in range(i+1,len(paths)):
             # if collsion is detected
-            if detect_collision(paths[i], paths[j]) != None:
-                location, t = detect_collision(paths[i], paths[j])
+            if detectCollision(paths[i], paths[j]) != None:
+                location, t = detectCollision(paths[i], paths[j])
                 # append collision
                 collisions.append({'a1': i, 'a2': j, 'loc': location, 'timestep': t})
             
@@ -44,7 +44,7 @@ def detect_collisions(paths):
     return collisions
 
 
-def standard_splitting(collision):
+def standardSplitting(collision):
     ##############################
     # Task 3.2: Return a list of (two) constraints to resolve the given collision
     #           Vertex collision: the first constraint prevents the first agent to be at the specified location at the
@@ -72,7 +72,7 @@ def standard_splitting(collision):
     return constraints
 
 
-def disjoint_splitting(collision):
+def disjointSplitting(collision):
     ##############################
     # Task 4.1: Return a list of (two) constraints to resolve the given collision
     #           Vertex collision: the first constraint enforces one agent to be at the specified location at the
@@ -109,20 +109,20 @@ class CBSSolver(object):
         # compute heuristics for the low-level search
         self.heuristics = []
         for goal in self.goals:
-            self.heuristics.append(compute_heuristics(my_map, goal))
+            self.heuristics.append(computeHeuristics(my_map, goal))
 
-    def push_node(self, node):
+    def pushNode(self, node):
         heapq.heappush(self.open_list, (node['cost'], len(node['collisions']), self.num_of_generated, node))
         #print("Generate node {}".format(self.num_of_generated))
         self.num_of_generated += 1
 
-    def pop_node(self):
+    def popNode(self):
         _, _, id, node = heapq.heappop(self.open_list)
         #print("Expand node {}".format(id))
         self.num_of_expanded += 1
         return node
 
-    def find_solution(self, disjoint=True):
+    def findSolution(self, disjoint=True):
         """ Finds paths for all agents from their start locations to their goal locations
 
         disjoint    - use disjoint splitting or not
@@ -146,10 +146,10 @@ class CBSSolver(object):
                 raise BaseException('No solutions')
             root['paths'].append(path)
 
-        root['cost'] = get_sum_of_cost(root['paths'])
-        root['collisions'] = detect_collisions(root['paths'])
+        root['cost'] = getSumOfCost(root['paths'])
+        root['collisions'] = detectCollisions(root['paths'])
         
-        self.push_node(root)
+        self.pushNode(root)
 
         '''# Task 3.1: Testing
         print(root['collisions'])
@@ -169,7 +169,7 @@ class CBSSolver(object):
         
         while len(self.open_list) > 0:        
             # get next node with smallest cost
-            P = self.pop_node()  
+            P = self.popNode()  
             # if node has no collisions, return paths         
             if len(P['collisions']) == 0:
                 self.CPU_time = timer.time() - self.start_time
@@ -177,7 +177,7 @@ class CBSSolver(object):
 
             # convert collision to list of two constraints         
             collision = P['collisions'][0]  
-            constraints = standard_splitting(collision)          
+            constraints = standardSplitting(collision)          
             
             # for each constraint option, create new child
             for constraint in constraints:
@@ -198,11 +198,11 @@ class CBSSolver(object):
                 if path != None:
                                         
                     Q['paths'][ai] = path                                      
-                    Q['collisions'] = detect_collisions(Q['paths'])                                       
-                    Q['cost'] = get_sum_of_cost(Q['paths'])
+                    Q['collisions'] = detectCollisions(Q['paths'])                                       
+                    Q['cost'] = getSumOfCost(Q['paths'])
                     
                     
-                    self.push_node(Q)
+                    self.pushNode(Q)
                     
             #i +=1
 
@@ -214,6 +214,6 @@ class CBSSolver(object):
     def print_results(self, node):
         print("\n Found a solution! \n")
         print("CPU time (s):    {:.2f}".format(self.CPU_time))
-        print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
+        print("Sum of costs:    {}".format(getSumOfCost(node['paths'])))
         print("Expanded nodes:  {}".format(self.num_of_expanded))
         print("Generated nodes: {}".format(self.num_of_generated))

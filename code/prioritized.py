@@ -1,5 +1,5 @@
 import time as timer
-from single_agent_planner import compute_heuristics, a_star, get_sum_of_cost
+from single_agent_planner import computeHeuristics, a_star, getSumOfCost
 
 
 class PrioritizedPlanningSolver(object):
@@ -21,7 +21,7 @@ class PrioritizedPlanningSolver(object):
         # compute heuristics for the low-level search
         self.heuristics = []
         for goal in self.goals:
-            self.heuristics.append(compute_heuristics(my_map, goal))
+            self.heuristics.append(computeHeuristics(my_map, goal))
 
     def find_solution(self):
         """ Finds paths for all agents from their start locations to their goal locations."""
@@ -94,6 +94,6 @@ class PrioritizedPlanningSolver(object):
 
         print("\n Found a solution! \n")
         print("CPU time (s):    {:.2f}".format(self.CPU_time))
-        print("Sum of costs:    {}".format(get_sum_of_cost(result)))
+        print("Sum of costs:    {}".format(getSumOfCost(result)))
       
         return result, self.CPU_time

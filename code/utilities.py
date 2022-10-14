@@ -8,7 +8,7 @@ from distributed_individual import DistributedPlanningSolverIndividual
 
 SOLVER = "CBS"
 
-def print_mapf_instance(my_map, starts, goals):
+def printMapfInstance(my_map, starts, goals):
     """
     Prints start location and goal location of all agents, using @ for an obstacle, . for a open cell, and 
     a number for the start location of each agent.
@@ -20,11 +20,11 @@ def print_mapf_instance(my_map, starts, goals):
         @ @ @ @ @ @ @ 
     """
     print('Start locations')
-    print_locations(my_map, starts)
+    printLocations(my_map, starts)
     print('Goal locations')
-    print_locations(my_map, goals)
+    printLocations(my_map, goals)
 
-def print_locations(my_map, locations):
+def printLocations(my_map, locations):
     """
     See docstring print_mapf_instance function above.
     """
@@ -122,7 +122,7 @@ def processArgs(args, my_map, starts, goals ):
     if args.solver == "CBS":
         print("***Run CBS***")
         cbs = CBSSolver(my_map, starts, goals)
-        paths, time = cbs.find_solution(args.disjoint)
+        paths, time = cbs.findSolution(args.disjoint)
     elif args.solver == "Independent":
         print("***Run Independent***")
         solver = IndependentSolver(my_map, starts, goals)
@@ -134,7 +134,7 @@ def processArgs(args, my_map, starts, goals ):
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
         print("***Run Distributed Planning***")
         solver = DistributedPlanningSolverIndividual(my_map, starts, goals) #!!!TODO: add your own distributed planning implementation here.
-        paths, time = solver.find_solution()
+        paths, time = solver.findSolution()
     else: 
         raise RuntimeError("Unknown solver!")
 
