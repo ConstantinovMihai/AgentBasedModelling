@@ -35,6 +35,21 @@ class DistributedPlanning(object):
             self.heuristics.append(compute_heuristics(my_map, goal))
 
         self.time = 0 # this is going to incrementaly increase and decisions are going to be made at each timestep
+    
+    def constraintsInPath(self, path, agent):
+        """ check whether there are constraints in the path of an agent
+        Args:
+            path (list): the planned path for the agent
+            agent (AircraftDistributed): the agent object 
+        """
+        # build constraint table for this agent
+        indexed_constraint_table = build_constraint_table(agent.constraints, agent.id)
+        for idx, loc in enumerate(path):
+            if idx < len(path) - 1:
+                if is_constrained(loc, path[idx + 1], self.time + idx, indexed_constraint_table):
+                    return True
+        # no constraints in the way 
+        return False
 
     def constraintsInPath(self, path, agent):
         """ check whether there are constraints in the path of an agent
