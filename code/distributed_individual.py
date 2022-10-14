@@ -41,8 +41,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             agent.path.append(agent.start)
 
         # simulate until all the agents reached their goals
-        #TODO REMOVE <100
-        while not all(self.goalsReached(agents)) and self.time < 500:
+        
+        while not all(self.goalsReached(agents)):
            
             # iterate for each agent
             # create constraints which will be used to run planning for each agent
