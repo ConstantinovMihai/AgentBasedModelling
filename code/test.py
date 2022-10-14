@@ -1,4 +1,7 @@
-a =  (10, 20)
-b = (0, -1)
+import enum
 
-print(a[0] + b[0], a[1] + b[1])
+
+a = [1,5,2,1]
+
+for idx, i in enumerate(a):
+    print(f"idx - {idx}, i - {i}")

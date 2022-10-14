@@ -146,6 +146,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
         goal_loc    - goal position
         agent       - the ID of the agent that is being re-planned
         constraints - constraints defining where robot should or cannot go at each timestep
+        nb_constraints - the total number of constraints met (debugging purposes only)
     """
 
     ##############################
@@ -159,8 +160,8 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
     
     # build constraint table for this agent
     indexed_constraint_table = build_constraint_table(constraints, agent)
-    
-    
+    #TODO :Remove this after debugging
+    nb_constraints = 0
 
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 't_step':time}
     push_node(open_list, root)
@@ -173,16 +174,20 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
         # if agent has reached goal location and there are no constraints posed on agent at a later time:
         # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
         if curr['loc'] == goal_loc and len(get_path(curr)) >= len(indexed_constraint_table) and distributed == False:
-            return get_path(curr)
+            return get_path(curr), nb_constraints
         elif curr['loc'] == goal_loc and distributed == True:
-            return get_path(curr)
+            return get_path(curr), nb_constraints
         for dir in range(5):
             child_loc = move(curr['loc'], dir)            
             # if child location is outside of map
             if child_loc[0] < 0 or child_loc[1] < 0 or child_loc[0] >= len(my_map) or child_loc[1] >= len(my_map[0]):
                 continue
             # if child location is a blocked cell or the cell is constrained
-            if my_map[child_loc[0]][child_loc[1]] or is_constrained(curr['loc'], child_loc, curr['t_step']+1, indexed_constraint_table): 
+            if my_map[child_loc[0]][child_loc[1]]: 
+                continue
+
+            if is_constrained(curr['loc'], child_loc, curr['t_step'] + 1, indexed_constraint_table): 
+                nb_constraints += 1
                 continue            
     
             child = {'loc': child_loc,
@@ -201,4 +206,4 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
                 closed_list[(child['loc'],child['t_step'])] = child
                 push_node(open_list, child)
 
-    return None  # Failed to find solutions
+    return None, nb_constraints  # Failed to find solutions
