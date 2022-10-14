@@ -81,8 +81,8 @@ class DistributedPlanning(object):
                 #  who are in the proximity of the starting agent (distance < radius)
                 # along with location, radar returns whether agent has reached its goal or not
                 if distanceAgents(start_agent.location, agent.location) < radar_radius and agent.location == agent.goal:
-                    prox_loc.append({'location':agent.location,'reached_goal':True})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True})
                 elif distanceAgents(start_agent.location, agent.location) < radar_radius:
-                    prox_loc.append({'location':agent.location,'reached_goal':False})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False})
 
         return prox_loc

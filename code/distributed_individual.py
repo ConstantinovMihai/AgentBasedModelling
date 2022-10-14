@@ -2,8 +2,6 @@
 This file contains the implemention of distributed planning WITHOUT COORDINATION.
 """
 
-
-from threading import local
 import time as timer
 from single_agent_planner import build_constraint_table, compute_heuristics, a_star, get_sum_of_cost, is_constrained
 from aircraft import AircraftDistributed
@@ -56,10 +54,11 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         # count the nb A* algo is called and the total number of constraints met
         #TODO: remove this
         a_start_counter = 0
-        nb_constraints = 0
-
+        
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)):
+        #TODO REMOVE <100
+        while not all(self.goalsReached(agents)) and self.time < 500:
+           
             # iterate for each agent
             # create constraints which will be used to run planning for each agent
             for agent in agents:
@@ -70,11 +69,33 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
             # run planning for each agent
             for idx, agent in enumerate(agents):
-                print(f"agent {idx}")
-                # run A* to compute the path of the agent
-                paths[idx], local_conts = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
                 
-                nb_constraints += local_conts
+                agent.planned_path = []
+                
+                wait_time = 0
+                found = False
+                while found == False:
+                    
+                    if wait_time+1 >= len(agent.path):
+                        found = True
+                    else:
+                        if agent.path[-wait_time-1] != agent.path[-wait_time-2]:
+                            found = True
+                        else:
+                            wait_time += 1 
+
+                #agent.heuristics = compute_heuristics(agent.my_map, agent.goal)
+                for constraint in agent.constraints:
+                    if constraint['loc'][0] in agent.heuristics:
+                        if constraint['hard']:
+                            agent.heuristics[constraint['loc'][0]] += 50
+                        else:
+                            agent.heuristics[constraint['loc'][0]] += 3
+                
+                agent.heuristics[agent.path[-1]] += (wait_time)         
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
+               
+
                 # call A* if there are constraints in the way or the paths is empty
                 recompute_path =  (not paths[idx]) or self.constraintsInPath(paths[idx], agent)
                 # recompute the path if necessary
@@ -87,17 +108,41 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # paths[idx] = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
 
                 # if there is no path, agent waits at current location
-                if paths[idx] is None:                    
-                    agent.path.append(agent.location)
-                    
+                if path is None:                    
+                    agent.planned_path.append(agent.location)
                 # the next location of the agent is stored as the second element in the path planned by A* (element zeroth is the current location)
-                elif (len(paths[idx]) > 1):
-                    agent.location = paths[idx][1]
-                    agent.path.append(paths[idx][1])
+                elif (len(path) > 1):
+                    #agent.location = path[1]                    
+                    agent.planned_path = path[1:3]
                 else: # the agent reached its goal
-                    agent.location = paths[idx][0]
-                    agent.path.append(paths[idx][0])
+                    #agent.location = path[0]
+                    agent.planned_path = path
+             
 
+            next_locations = []
+            for agent in agents:
+                next_locations.append([agent.planned_path[0]])
+  
+            collisions = detect_collisions(next_locations)
+                       
+
+            for agent in agents:
+                collided = False
+                for collision in collisions:                
+                    if agent.id == collision['a1']:
+                        agent.path.append(agent.location)
+                        collided = True
+
+                if not collided:
+                    agent.path.append(agent.planned_path[0])
+                    agent.location = agent.planned_path[0]
+            
+            # for agent in agents:
+            #     agent.location = agent.planned_path[0]
+            #     agent.path.append(agent.planned_path[0])
+
+            
+                
                 
             # increment time
             print(f"END OF TIMESTEP")
@@ -105,7 +150,22 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # when everything is done, store the final paths in the results 
         for agent in agents:
-            result.append(agent.path)
+          
+            trim_length = 0
+            found = False
+            while found == False:
+               
+                if trim_length +1 == len(agent.path):
+                    found = True
+                    continue
+                if agent.path[-trim_length-1] != agent.path[-trim_length-2]:
+                    found = True
+                else:
+                    trim_length += 1
+
+            path2 = agent.path[:len(agent.path)-trim_length].copy()
+
+            result.append(path2)
 
         self.CPU_time = timer.time() - start_time
 
@@ -113,5 +173,4 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         print("CPU time (s):    {:.2f}".format(self.CPU_time))
         print("Sum of costs:    {}".format(get_sum_of_cost(result)))
         print(f"A* was called in total {a_start_counter} times")
-        print(f"The number of constraints met is {nb_constraints}")
         return result, self.CPU_time
