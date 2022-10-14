@@ -22,13 +22,13 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         # TODO: check if clearing or recomputing the heuristics affects the behaviours of the model
         #agent.heuristics = computeHeuristics(agent.my_map, agent.goal)
         for constraint in agent.constraints:
-                    if constraint['loc'][0] in agent.heuristics:
-                        if constraint['hard']:
-                            #TODO: this cell will be occupied forever as the agent reached its goal
-                            agent.heuristics[constraint['loc'][0]] += 50
-                        else:
-                            # TODO: tune the parameters (the cell might become free in the future) 
-                            agent.heuristics[constraint['loc'][0]] += 3
+            if constraint['loc'][0] in agent.heuristics:
+                if constraint['hard']:
+                    #TODO: this cell will be occupied forever as the agent reached its goal
+                    agent.heuristics[constraint['loc'][0]] += 0
+                else:
+                    # TODO: tune the parameters (the cell might become free in the future) 
+                    agent.heuristics[constraint['loc'][0]] += 0
 
 
     def appendPlannedPath(self, agent, path):
@@ -136,7 +136,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # stores the locations of nearby agents
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc and the bubble method
-                agent.addBubbleConstraints(self.time, prox_loc)
+                agent.addConstraints(self.time, prox_loc)
                 
             # run planning for each agent
             for idx, agent in enumerate(agents):
