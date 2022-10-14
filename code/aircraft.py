@@ -27,9 +27,9 @@ class AircraftDistributed(object):
         self.path = []
         self.planned_path = []
 
+
     def addBubbleConstraints(self, time, prox_loc):
         """ Add the bubble constraints for the agent (i.e. the locations of the neighbouring agents + a bubble around them) 
-
         Args:
             time (int): the time at which the constraints are added
             prox_loc (list) : the locations at which other agents are (and have to be avoided)
@@ -37,21 +37,7 @@ class AircraftDistributed(object):
 
         # iterate among each proximum agent
         self.constraints = []
-        
-        if time > 0:
-            for neighbour in prox_loc:
-                #print("")
-                if neighbour['reached_goal'] == False:
-                    for t, constraint_loc in enumerate(neighbour['planned_path']):
-                    #for count, value in enumerate(values):
-                    #print({'agent': self.id,'loc': [constraint_loc],'timestep': time+t+1})
-                        self.constraints.append({'agent': self.id,'loc': [constraint_loc],'timestep': time+t+1, 'hard':False})
-                    self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
-                else:
-                    self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard': True})
-        else:
-            # the bubble constraints are only added, if the agent has not reached its goal and thus is likely to move in the next timestep, otherwise only the agents current (goal/final) location is stored as a constraint    
-            for neighbour in prox_loc:
+        for neighbour in prox_loc:
                 if neighbour['reached_goal'] == False:
                     bubble =  [(0, -1), (1, 0), (0, 1), (-1, 0), (0, 0)]
                     # iterates among the bubble_locations (i.e. the places the agent might go in the next iteration)
@@ -65,6 +51,36 @@ class AircraftDistributed(object):
                     constr_loc = neighbour['location'][0], neighbour['location'][1]
                     for t in range (0,2):
                         self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time+t, 'hard':False})
+
+
+    def addConstraints(self, time, prox_loc):
+        """ Add the constraints for an agent coordinating with other neighbouring agents 
+
+        Args:
+            time (int): the time at which the constraints are added
+            prox_loc (list) : the locations at which other agents are (and have to be avoided)
+        """
+
+        # reset the constraints list
+        self.constraints = []
+        
+        if time > 0:
+            # for each neighbouring agent, check if it reached its goal
+            # if yes, then add only its goal location as a "Hard" constraint
+            # if no, then add the few next planned steps of the planned path as constraints
+            # TODO: improve
+            for neighbour in prox_loc:
+                if neighbour['reached_goal'] == False:
+                    for t, constraint_loc in enumerate(neighbour['planned_path']):
+                        self.constraints.append({'agent': self.id,'loc': [constraint_loc],'timestep': time+t+1, 'hard':False})
+                    self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
+
+                else:
+                    self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard': True})
+        # at time step 0 the agents ahve no idea where other agents are starting 
+        else:
+            # for the first time step, employ the bubble constraints technique
+            self.addBubbleConstraints(time, prox_loc)
 
 
 
