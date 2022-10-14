@@ -20,6 +20,7 @@ class AircraftDistributed(object):
         self.goal = goal
         self.id = agent_id
         self.heuristics = heuristics
+        self.current_heuristics = heuristics
         # list with the constraints for the agent
         self.constraints = []
         self.location = start

@@ -16,22 +16,23 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
     """A distributed planner where agents do not communicate with each other"""
     
 
-    def modifyHeuristics(self, agent):
+    def modifyHeuristics(self, agent, hard_heur_factor, soft_heur_factor):
         """ Modifies the heuristic values of cells where a constraint is imposed for a certain agent
         """
         # TODO: check if clearing or recomputing the heuristics affects the behaviours of the model
         #agent.heuristics = computeHeuristics(agent.my_map, agent.goal)
+        agent.current_heuristics = agent.heuristics.copy()
         for constraint in agent.constraints:
             if constraint['loc'][0] in agent.heuristics:
                 if constraint['hard']:
                     #TODO: this cell will be occupied forever as the agent reached its goal
-                    agent.heuristics[constraint['loc'][0]] += 0
+                    agent.current_heuristics[constraint['loc'][0]] = hard_heur_factor*agent.heuristics[constraint['loc'][0]]
                 else:
                     # TODO: tune the parameters (the cell might become free in the future) 
-                    agent.heuristics[constraint['loc'][0]] += 0
+                    agent.current_heuristics[constraint['loc'][0]] = soft_heur_factor*agent.heuristics[constraint['loc'][0]]
 
 
-    def appendPlannedPath(self, agent, path):
+    def appendPlannedPath(self, agent, path,plan_broadcast):
         """_summary_
 
         Args:
@@ -43,7 +44,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             agent.planned_path.append(agent.location)
         # the next n locations of the agent as planned by A*
         elif (len(path) > 1):            
-            agent.planned_path = path[1:3]
+            agent.planned_path = path[1:plan_broadcast]
         else: # the agent reached its goal
             agent.planned_path = path
 
@@ -117,6 +118,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
 
     def findSolution(self):
+        wait_time_factor = 1
+        hard_heur_factor = 1.0
+        soft_heur_factor = 1.0
+        plan_broadcast = 2
+
+    
         """ Finds paths for all agents from their start locations to their goal locations."""
 
         start_time = timer.time()
@@ -128,7 +135,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)):
+        while not all(self.goalsReached(agents)) and self.time<500:
     
             # create constraints which will be used to run planning for each agent
             for agent in agents:
@@ -143,12 +150,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 wait_time = self.waitingTime(agent)
                 
                 # h_value of wait location is increased by time spent waiting 
-                agent.heuristics[agent.path[-1]] += (wait_time)
-                self.modifyHeuristics(agent)
+                agent.heuristics[agent.path[-1]] += (wait_time_factor*wait_time)
+                self.modifyHeuristics(agent,hard_heur_factor, soft_heur_factor)
 
                 # update the planned path
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
-                self.appendPlannedPath(agent, path)
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
+                self.appendPlannedPath(agent, path, plan_broadcast)
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
