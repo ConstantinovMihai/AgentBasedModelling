@@ -82,6 +82,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                         # TODO: decide over a tiebreaker
                         agent.path.append(agent.location)
                         collided = True
+                        break
                 # if there are no collisions, append the intended location to the path
                 # and update the current location of the agent
                 if not collided:
@@ -97,9 +98,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             result (list) : the list of final paths
         """
         
-        # when everything is done, store the final paths in the results 
-        for agent in agents:
-          
+        # when everything is done, store the final paths in the results and remove locations of agent waiting at goal from path to not influence the total cost
+        for agent in agents:          
             trim_length = 0
             found = False
             while found == False:
@@ -111,7 +111,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     found = True
                 else:
                     trim_length += 1
-
             path2 = agent.path[:len(agent.path)-trim_length].copy()
 
             result.append(path2)
