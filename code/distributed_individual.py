@@ -81,7 +81,10 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             # this is the tie-breaker for collisions
             priority = collision['a1']
 
-            if (waiting_times[collision['a1'] < waiting_times[collision['a2']]]):
+            #print(waiting_times[collision['a1']])
+            #print(waiting_times[collision['a2']])
+
+            if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
                 priority = collision['a2']
     
 
@@ -158,6 +161,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<500:
+            
             if self.time == 499:
                 print("TIME LIMIT HIT")
 
@@ -167,6 +171,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc and the bubble method
                 agent.addConstraints(self.time, prox_loc)
+            
                 
             # run planning for each agent
             for idx, agent in enumerate(agents):
@@ -179,10 +184,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
                 # update the planned path
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
+                
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
-                print(self.time)
-                print(agent.id)
-                print(path)
+
+                #print('agent',agent.id)
+                #print(path)
+                
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
