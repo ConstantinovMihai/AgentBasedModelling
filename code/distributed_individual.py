@@ -2,8 +2,7 @@
 This file contains the implemention of distributed planning WITHOUT COORDINATION.
 """
 
-import imp
-import re
+import random
 import numpy as np
 import time as timer
 from single_agent_planner import computeHeuristics, a_star, getSumOfCost
@@ -50,7 +49,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
 
    
-    def getNextLocations(self, agents):
+    def getNextLocations(self, agents : list):
         """ Gets the list of all the agents' next intended location
  
         Args:
@@ -63,26 +62,55 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         return next_locations
 
 
-    def collisionHandling(self, agents):
+    def collisionHandling(self, agents : AircraftDistributed):
         """ Identifies agent who plan to occupy the same cells in the next time step
 
         Args:
             agents (list of AircraftDistributed): the list of the agents objects
         """
+
+        def assignPriority(collision : dict, waiting_times : list):
+            """ Helper function which decides which agent in a conflict has priority, based on the duration spent waiting by the agents
+            
+            Args:
+                collision (dicts): dictionary containing the indeces of the agents, the location and the timestep of the collision
+                waiting_times (list): list with the time spent waiting by the agents
+            Returns the index of the agent who was assigned priority
+            """
+            # give the priority to the agent who waited the most so far
+            # this is the tie-breaker for collisions
+            priority = collision['a1']
+
+            if (waiting_times[collision['a1'] < waiting_times[collision['a2']]]):
+                priority = collision['a2']
+    
+
+            return priority
+
+
         next_locations = self.getNextLocations(agents)
         collisions = detectCollisions(next_locations)
         
+        waiting_times = []
+        for agent in agents:
+            waiting_times.append(agent.waiting)
        
         for agent in agents:
                 collided = False
                 # for each agent check if any of the collisions belong to it 
-                for collision in collisions:                
-                    if agent.id == collision['a1']:
+                for collision in collisions:       
+                    
+                    # give the priority to the agent who waited the most so far
+                    # this is the tie-breaker for collisions
+                    priority = assignPriority(collision, waiting_times)
+
+                    if agent.id == priority:
                         # if the agent has a collision the first agent waits a timestep
                         # TODO: decide over a tiebreaker
                         agent.path.append(agent.location)
                         collided = True
                         break
+
                 # if there are no collisions, append the intended location to the path
                 # and update the current location of the agent
                 if not collided:
@@ -91,7 +119,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
 
     def appendFinalPaths(self, agents, result):
-        """ when everything is done, store the final paths in the results and trim the paths
+        """ When everything is done, store the final paths in the results and trim the paths
 
         Args:
             agents (list of AircraftDistributed): the list of the agents objects
@@ -130,7 +158,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<500:
-    
+            if self.time == 499:
+                print("TIME LIMIT HIT")
+
             # create constraints which will be used to run planning for each agent
             for agent in agents:
                 # stores the locations of nearby agents

@@ -131,20 +131,14 @@ def processArgs(args, my_map, starts, goals):
         paths, time = solver.find_solution()
     elif args.solver == "Prioritized":
         print("***Run Prioritized***")
-        heuristics = [1, 1, 1, 1]
-        if args.heuristics != "none":
-            heuristics = args.heuristics.strip('][').split(',')
-            heuristics = [int(x) for x in heuristics] # convert to int
-        print(f"heuristics {heuristics}")
-        solver = PrioritizedPlanningSolver(my_map, starts, goals, heuristics)
+        solver = PrioritizedPlanningSolver(my_map, starts, goals)
         paths, time = solver.find_solution()
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
         print("***Run Distributed Planning***")
-        heuristics = [1, 1, 1, 2, 5] # the default values for the heuristics, see the constructor of DistributedClass
+        heuristics = [2, 1, 1, 3, 5] # the default values for the heuristics, see the constructor of DistributedClass
         if args.heuristics != "none":
             heuristics = args.heuristics.strip('][').split(',')
             heuristics = [int(x) for x in heuristics] # convert to int
-        print(f"heuristics {heuristics}")
         solver = DistributedPlanningSolverIndividual(my_map, starts, goals, heuristics) #!!!TODO: add your own distributed planning implementation here.
         paths, time = solver.findSolution()
     else: 

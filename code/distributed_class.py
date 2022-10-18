@@ -147,6 +147,8 @@ class DistributedPlanning(object):
                 break
             
             wait_time += 1 
+        
+        agent.waiting = wait_time
 
         return wait_time 
 
