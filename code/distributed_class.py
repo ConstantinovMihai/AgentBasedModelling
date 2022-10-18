@@ -2,7 +2,6 @@
 This file contains the implemention of distributed planning WITHOUT COORDINATION.
 """
 
-import re
 import numpy as np
 import time as timer
 from single_agent_planner import computeHeuristics, a_star, getSumOfCost
@@ -12,15 +11,14 @@ from single_agent_planner import isConstrained, buildConstraintTable
 
 
 class DistributedPlanning(object):
-    """ parent class for the planners
-    Args:
-        object (_type_): _description_
+    """ parent class for the planners_
     """
 
-    def __init__(self, my_map, starts, goals):
+    def __init__(self, my_map, starts, goals, heuristics):
         """my_map   - list of lists specifying obstacle positions
         starts      - [(x1, y1), (x2, y2), ...] list of start locations
         goals       - [(x1, y1), (x2, y2), ...] list of goal locations
+        heuristics - [h1, h2, h3, h4] list of heuristisc
         """
         self.CPU_time = 0
         self.my_map = my_map
@@ -28,15 +26,28 @@ class DistributedPlanning(object):
         self.goals = goals
         self.num_of_agents = len(goals)
         self.heuristics = [] 
-        self.radar_radius = 5
+        
         # the locations of all agents
         self.locations = starts
 
+        # heuristics 
+        
+        # the factor by which the wait time increases the heuristic value for the cell the agent is waiting on
+        self.wait_time_factor = heuristics[0]
+        # the factor by which the heuristic value of a cell with a hard constraint on it increases
+        self.hard_heur_factor = heuristics[1]
+        # the factor by which the heuristic value of a cell with a hard constraint on it increases
+        self.soft_heur_factor = heuristics[2]
+        # the number of time steps of planned path the agents broadcast to each other
+        self.plan_broadcast = heuristics[3]
+        # the distance an agent can see
+        self.radar_radius = heuristics[4]
         for goal in self.goals:
             self.heuristics.append(computeHeuristics(my_map, goal))
 
         self.time = 0 # this is going to incrementaly increase and decisions are going to be made at each timestep
     
+
     def constraintsInPath(self, path, agent):
         """ check whether there are constraints in the path of an agent
         Args:
@@ -47,11 +58,13 @@ class DistributedPlanning(object):
         indexed_constraint_table = buildConstraintTable(agent.constraints, agent.id)
         for idx, loc in enumerate(path):
             if idx < len(path) - 1:
+                
                 if isConstrained(loc, path[idx + 1], self.time + idx, indexed_constraint_table):
                     return True
         # no constraints in the way 
         return False
 
+    
     def goalsReached(self, agents):
         """ Checks if all agents reached their goals
 
@@ -67,7 +80,7 @@ class DistributedPlanning(object):
         return reached_goal
 
 
-    def radarScanner(self, start_agent, agents, radar_radius = 4):
+    def radarScanner(self, start_agent, agents):
         """ Starting from the start agent, it scans the map and finds all agents (and their locations) within a fixed radius distance
 
         Args:
@@ -96,9 +109,9 @@ class DistributedPlanning(object):
                 # compute the distance between the starting agent and all the others, and store the locations of the ones
                 #  who are in the proximity of the starting agent (distance < radius)
                 # along with location, radar returns whether agent has reached its goal or not
-                if distanceAgents(start_agent.location, agent.location) < radar_radius and agent.location == agent.goal:
+                if distanceAgents(start_agent.location, agent.location) < self.radar_radius and agent.location == agent.goal:
                     prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True})
-                elif distanceAgents(start_agent.location, agent.location) < radar_radius:
+                elif distanceAgents(start_agent.location, agent.location) < self.radar_radius:
                     prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False})
 
         return prox_loc
@@ -130,10 +143,10 @@ class DistributedPlanning(object):
             if wait_time + 1 >= len(agent.path):
                 break
             # if an agent's location at a time step is different than the location at the prev timestep, break
-            if agent.path[-wait_time-1] != agent.path[-wait_time-2]:
+            if agent.path[-wait_time - 1] != agent.path[-wait_time - 2]:
                 break
-            else:
-                wait_time += 1 
+            
+            wait_time += 1 
 
         return wait_time 
 

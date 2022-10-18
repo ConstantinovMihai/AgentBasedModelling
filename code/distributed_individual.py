@@ -26,10 +26,10 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             if constraint['loc'][0] in agent.heuristics:
                 if constraint['hard']:
                     #TODO: this cell will be occupied forever as the agent reached its goal
-                    agent.current_heuristics[constraint['loc'][0]] = hard_heur_factor*agent.heuristics[constraint['loc'][0]]
+                    agent.current_heuristics[constraint['loc'][0]] = hard_heur_factor * agent.heuristics[constraint['loc'][0]]
                 else:
                     # TODO: tune the parameters (the cell might become free in the future) 
-                    agent.current_heuristics[constraint['loc'][0]] = soft_heur_factor*agent.heuristics[constraint['loc'][0]]
+                    agent.current_heuristics[constraint['loc'][0]] = soft_heur_factor * agent.heuristics[constraint['loc'][0]]
 
 
     def appendPlannedPath(self, agent, path,plan_broadcast):
@@ -50,7 +50,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
 
    
-
     def getNextLocations(self, agents):
         """ Gets the list of all the agents' next intended location
  
@@ -118,11 +117,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
 
     def findSolution(self):
-        wait_time_factor = 1
-        hard_heur_factor = 1.0
-        soft_heur_factor = 1.0
-        plan_broadcast = 2
-
     
         """ Finds paths for all agents from their start locations to their goal locations."""
 
@@ -150,12 +144,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 wait_time = self.waitingTime(agent)
                 
                 # h_value of wait location is increased by time spent waiting 
-                agent.heuristics[agent.path[-1]] += (wait_time_factor*wait_time)
-                self.modifyHeuristics(agent,hard_heur_factor, soft_heur_factor)
+                agent.heuristics[agent.path[-1]] += (self.wait_time_factor * wait_time)
+                self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
                 # update the planned path
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
-                self.appendPlannedPath(agent, path, plan_broadcast)
+                self.appendPlannedPath(agent, path, self.plan_broadcast)
 
             # handle the possible collision situations       
             self.collisionHandling(agents)

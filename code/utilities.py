@@ -55,7 +55,9 @@ def parseArgs():
                         help='Use the disjoint splitting')
     parser.add_argument('--solver', type=str, default=SOLVER,
                         help='The solver to use (one of: {CBS,Independent,Prioritized}), defaults to ' + str(SOLVER))
-
+    parser.add_argument('--heuristics', type=str, default='none', 
+                        help='The heurisitcs used in running the distributed planner, defaults to None')
+    
     args = parser.parse_args()
     return args
 
@@ -116,7 +118,7 @@ def import_mapf_instance(filename):
     return my_map, starts, goals
 
 
-def processArgs(args, my_map, starts, goals ):
+def processArgs(args, my_map, starts, goals):
     time = 0
     paths = []
     if args.solver == "CBS":
@@ -129,11 +131,21 @@ def processArgs(args, my_map, starts, goals ):
         paths, time = solver.find_solution()
     elif args.solver == "Prioritized":
         print("***Run Prioritized***")
-        solver = PrioritizedPlanningSolver(my_map, starts, goals)
+        heuristics = [1, 1, 1, 1]
+        if args.heuristics != "none":
+            heuristics = args.heuristics.strip('][').split(',')
+            heuristics = [int(x) for x in heuristics] # convert to int
+        print(f"heuristics {heuristics}")
+        solver = PrioritizedPlanningSolver(my_map, starts, goals, heuristics)
         paths, time = solver.find_solution()
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
         print("***Run Distributed Planning***")
-        solver = DistributedPlanningSolverIndividual(my_map, starts, goals) #!!!TODO: add your own distributed planning implementation here.
+        heuristics = [1, 1, 1, 2, 5] # the default values for the heuristics, see the constructor of DistributedClass
+        if args.heuristics != "none":
+            heuristics = args.heuristics.strip('][').split(',')
+            heuristics = [int(x) for x in heuristics] # convert to int
+        print(f"heuristics {heuristics}")
+        solver = DistributedPlanningSolverIndividual(my_map, starts, goals, heuristics) #!!!TODO: add your own distributed planning implementation here.
         paths, time = solver.findSolution()
     else: 
         raise RuntimeError("Unknown solver!")
