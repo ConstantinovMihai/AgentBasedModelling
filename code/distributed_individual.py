@@ -180,6 +180,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # update the planned path
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
+                print(self.time)
+                print(agent.id)
+                print(path)
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
