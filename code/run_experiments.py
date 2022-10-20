@@ -143,10 +143,10 @@ def testExistingMaps(args):
     
     # my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     # my_map = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]]
-    starts = [(1, 1), (2, 0), (7, 1)]
-    goals = [(1, 20), (0, 20), (2, 21)]
+    starts = starts = [(1, 1), (2, 0), (7, 1)]
+    goals =  goals = [(1, 20), (0, 20), (2, 21)]
     my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
-    #my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
+    # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
     testPathSimulation(args, my_map, starts, goals, paths, animate=True)
     pass
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
     testExistingMaps(args)
 
-    #runSimulation(args, animate=False)
+    # runSimulation(args, animate=False)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

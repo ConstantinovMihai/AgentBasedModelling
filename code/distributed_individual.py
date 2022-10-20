@@ -68,7 +68,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         """
         next_locations = []
         for agent in agents:
-            next_locations.append([agent.planned_path[0]])
+            next_locations.append([agent.location,agent.planned_path[0]])
         
         return next_locations
 
@@ -90,7 +90,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             """
             # give the priority to the agent who waited the most so far
             # this is the tie-breaker for collisions
-            priority = collision['a1']
+            priority = [collision['a1'],collision['a2']]
 
             #print(waiting_times[collision['a1']])
             #print(waiting_times[collision['a2']])
@@ -98,7 +98,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             # if an agent is already in its goal, it should lose priority
 
             if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
-                priority = collision['a2']
+                priority = [collision['a2'],collision['a1']]
             # TODO: see if we can make this work better than the previous
             # if (waiting_times[collision['a1'] == waiting_times[collision['a2']]]):
             #     priority = random.choice([collision['a1'], collision['a2']])
@@ -106,49 +106,54 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             return priority
 
 
-        next_locations = self.getNextLocations(agents)
-        collisions = detectCollisions(next_locations)
+        
         
         waiting_times = []
         for agent in agents:
             waiting_times.append(agent.waiting)
-       
-        for agent in agents:
-           
-            collided = False
-            # for each agent check if any of the collisions belong to it 
-            
-            for collision in collisions:       
-                
+
+        curr_and_next_locations = self.getNextLocations(agents)       
+        collisions = detectCollisions(curr_and_next_locations)
+
+        debug_counter= 0
+        while len(collisions)>0 and debug_counter<50:
+            for agent in agents: 
+                # for each agent check if any of the collisions belong to it                
+                               
                 # give the priority to the agent who waited the most so far
                 # this is the tie-breaker for collisions
-                priority = assignPriority(collision, waiting_times)
+                for collision in collisions:
+                    priority = assignPriority(collision, waiting_times)
 
-                # if an agent who reached their goal blocks the path of another agent, make it move out of the way
-                if agent.goal == agent.location:
-                    print("DO I EVEN REACH THIS POIITN??")
-                    if agent.id == collision['a1'] or agent.id == collision['a2']:
-                        #constraint the agent goal for the next time step to force it to move
-                        agent.constraints.append({'agent': agent.id,'loc': [agent.location],'timestep': self.time + 1, 'hard':False})
-                        # for t, constraint_loc in enumerate(agent.planned_path):
-                            # agent.constraints.append({'agent': agent.id,'loc': [constraint_loc],'timestep': self.time+t+1, 'hard':False})
-                        path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
-                        print (f"agent id {agent.id} path is {path}")
-                        self.appendPlannedPath(agent, path, self.plan_broadcast)
+                    # if an agent who reached their goal blocks the path of another agent, make it move out of the way
+                    if agent.goal == agent.location:
+                        if agent.id == collision['a1'] or agent.id == collision['a2']:
+                            #constraint the agent goal for the next time step to force it to move
+                            agent.constraints.append({'agent': agent.id,'loc': [agent.location],'timestep': self.time + 1, 'hard':False})
+                            # for t, constraint_loc in enumerate(agent.planned_path):
+                                # agent.constraints.append({'agent': agent.id,'loc': [constraint_loc],'timestep': self.time+t+1, 'hard':False})
+                            path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
+                            
+                            self.appendPlannedPath(agent, path, self.plan_broadcast)
+                            break
 
 
-                if agent.id == priority:
-                    # if the agent has a collision the non-priority agent waits a timestep
-                    agent.path.append(agent.location)
-                    collided = True
-                    break
+                    if agent.id == priority[0]:
+                        # if the agent has a collision the non-priority agent waits a timestep
+                        agent.planned_path = [agent.location]                        
+                        break
+
+                curr_and_next_locations = self.getNextLocations(agents)
+                collisions = detectCollisions(curr_and_next_locations)
                 
                 
             # if there are no collisions, append the intended location to the path
             # and update the current location of the agent
-            if not collided:
-                agent.path.append(agent.planned_path[0])
-                agent.location = agent.planned_path[0]
+            debug_counter +=1
+            
+        for agent in agents:
+            agent.path.append(agent.planned_path[0])
+            agent.location = agent.planned_path[0]
 
 
     def appendFinalPaths(self, agents, result):
@@ -190,8 +195,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)) and self.time<100:
-            print(self.time)
+        while not all(self.goalsReached(agents)) and self.time<500:
+        
+            
             
             if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
@@ -214,11 +220,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
                 # update the planned path  
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)                
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)       
+               
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
         
             # handle the possible collision situations       
-            self.collisionHandling(agents)
+            
 
             
             for agent in agents:
@@ -227,14 +234,17 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             all_agent_locations = []
             for idx, agent in enumerate(agents):
                 if agent.location == agent.goal:
-                    temp_map[agent.location[0]][agent.location[1]] = True
-            
+                    temp_map[agent.location[0]][agent.location[1]] = True            
             
             for agent in agents:
+                agent.blockage = False
                 if agent.location != agent.goal:
                     heuristicss = computeHeuristics(temp_map, agent.goal)
                     if agent.location not in heuristicss:
-                        print("Blockage")
+                        print("BLOCKED",agent.id)
+                        agent.blockage = True
+
+            self.collisionHandling(agents)
 
             # increment time
             self.time += 1

@@ -13,13 +13,15 @@ def detectCollision(path1, path2):
     #           You should use "get_location(path, t)" to get the location of a robot at time t.
     
     # for each timestep in longest path
+
     for ts in range(max(len(path2),len(path1))):
         # identify vertex collision
         if getLocation(path1, ts) == getLocation(path2, ts):
             return [getLocation(path1, ts)], ts
         # identify edge collisions if one of the agents is still moving
-        elif getLocation(path1, ts-1) == getLocation(path2, ts) and getLocation(path2, ts-1) == getLocation(path1, ts) and ts -1 < min(len(path2),len(path1)):
+        elif getLocation(path1, ts-1) == getLocation(path2, ts) and getLocation(path2, ts-1) == getLocation(path1, ts):
             return [getLocation(path1, ts),getLocation(path2, ts)], ts
+    
     return None
 
 
@@ -209,6 +211,7 @@ class CBSSolver(object):
             #i +=1
 
         self.print_results(root)
+        self.printCollisions(root)
         return root, self.CPU_time
         
 
