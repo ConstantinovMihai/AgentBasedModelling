@@ -6,10 +6,11 @@ import random
 from turtle import st
 import numpy as np
 import time as timer
-from single_agent_planner import a_star
+from single_agent_planner import a_star, computeHeuristics
 from aircraft import AircraftDistributed
 from cbs import detectCollisions
 from distributed_class import DistributedPlanning
+import copy
 
 class DistributedPlanningSolverIndividual(DistributedPlanning):
     """A distributed planner where agents do not communicate with each other"""
@@ -175,7 +176,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)) and self.time<500:
+        while not all(self.goalsReached(agents)) and self.time<100:
+            print(self.time)
             
             if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
@@ -198,22 +200,35 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
                 # update the planned path
+                print(agent.my_map)
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
-<<<<<<< HEAD
                 #print(self.time)
                 #print(agent.id)
                 #print(path)
-=======
-
-                #print('agent',agent.id)
-                #print(path)
-                
->>>>>>> dce9638b1e8ecd005b5ec9122a7b29db5f119011
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
+
+            
+            for agent in agents:
+                temp_map = copy.deepcopy(agent.my_map)
+
+            all_agent_locations = []
+            for idx, agent in enumerate(agents):
+                if agent.location == agent.goal:
+                    temp_map[agent.location[0]][agent.location[1]] = True
+            
+            
+            for agent in agents:
+                if agent.location != agent.goal:
+                    heuristicss = computeHeuristics(temp_map, agent.goal)
+                    if agent.location not in heuristicss:
+                        print("Blockage")
+
+
+
 
             # increment time
             self.time += 1
