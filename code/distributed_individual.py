@@ -93,7 +93,10 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             # this is the tie-breaker for collisions
             priority = collision['a1']
 
-            if (waiting_times[collision['a1'] < waiting_times[collision['a2']]]):
+            #print(waiting_times[collision['a1']])
+            #print(waiting_times[collision['a2']])
+
+            if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
                 priority = collision['a2']
             
             # TODO: see if we can make this work better than the previous
@@ -173,6 +176,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<500:
+            
             if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
@@ -182,6 +186,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc and the bubble method
                 agent.addConstraints(self.time, prox_loc)
+            
                 
             # run planning for each agent
             for idx, agent in enumerate(agents):
@@ -194,10 +199,18 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
                 # update the planned path
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
+                
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
+<<<<<<< HEAD
                 #print(self.time)
                 #print(agent.id)
                 #print(path)
+=======
+
+                #print('agent',agent.id)
+                #print(path)
+                
+>>>>>>> dce9638b1e8ecd005b5ec9122a7b29db5f119011
 
             # handle the possible collision situations       
             self.collisionHandling(agents)

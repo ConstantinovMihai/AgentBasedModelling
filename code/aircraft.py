@@ -66,7 +66,7 @@ class AircraftDistributed(object):
         # reset the constraints list
         self.constraints = []
         
-        if time > 0:
+        if time >= 0:
             # for each neighbouring agent, check if it reached its goal
             # if yes, then add only its goal location as a "Hard" constraint
             # if no, then add the few next planned steps of the planned path as constraints
