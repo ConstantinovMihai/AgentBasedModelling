@@ -176,7 +176,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)) and self.time<100:
+        while not all(self.goalsReached(agents)) and self.time<500:
             print(self.time)
             
             if self.time == 499:
