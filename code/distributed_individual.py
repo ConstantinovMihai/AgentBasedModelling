@@ -2,8 +2,6 @@
 This file contains the implemention of distributed planning WITHOUT COORDINATION.
 """
 
-import random
-from turtle import st
 import numpy as np
 import time as timer
 from single_agent_planner import a_star, computeHeuristics
@@ -26,7 +24,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         self.my_map = my_map
         self.starts = starts
         self.goals = goals
-        
+
 
     def modifyHeuristics(self, agent, hard_heur_factor, soft_heur_factor):
         """ Modifies the heuristic values of cells where a constraint is imposed for a certain agent
@@ -101,7 +99,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
             if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
                 priority = collision['a2']
-
             # TODO: see if we can make this work better than the previous
             # if (waiting_times[collision['a1'] == waiting_times[collision['a2']]]):
             #     priority = random.choice([collision['a1'], collision['a2']])
@@ -249,5 +246,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         
         self.printCollisions(result)    
         self.printResult(result)
+
 
         return result, self.CPU_time
