@@ -190,19 +190,19 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)) and self.time<100:
-            print(self.time)
+        while not all(self.goalsReached(agents)) and self.time<500:
+            # print(self.time)
             
             
             
-            if self.time == 99:
+            if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
             
 
             # create constraints which will be used to run planning for each agent
             for agent in agents:
-                print(agent.location)
+                # print(agent.location)
                 # stores the locations of nearby agents
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc and the bubble method

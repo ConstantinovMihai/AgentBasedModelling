@@ -136,7 +136,7 @@ def processArgs(args, my_map, starts, goals):
         paths, time = solver.find_solution()
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
         print("***Run Distributed Planning***")
-        heuristics = [2, 1, 1, 3, 5] # the default values for the heuristics, see the constructor of DistributedClass
+        heuristics = [2, 1, 1, 6, 8] # the default values for the heuristics, see the constructor of DistributedClass
         if args.heuristics != "none":
             heuristics = args.heuristics.strip('][').split(',')
             heuristics = [int(x) for x in heuristics] # convert to int
