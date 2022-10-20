@@ -5,6 +5,7 @@ from independent import IndependentSolver
 from prioritized import PrioritizedPlanningSolver
 from pathlib import Path
 from distributed_individual import DistributedPlanningSolverIndividual
+from cbs import detectCollisions
 
 SOLVER = "CBS"
 
@@ -170,3 +171,5 @@ def plotData(data):
     plt.hist(data)
     plt.show()
 
+
+    

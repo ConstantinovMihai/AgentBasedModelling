@@ -19,15 +19,15 @@ import utilities
 
 SOLVER = "CBS"
 
-def testPathSimulation(args, my_map, starts, goals, paths):
-    if not args.batch:
+def testPathSimulation(args, my_map, starts, goals, paths, animate = False):
+    if not args.batch and animate:
         print("***Test paths on a simulation***")
         animation = Animation(my_map, starts, goals, paths)
             # animation.save("output.mp4", 1.0) # install ffmpeg package to use this option
         animation.show() 
 
 
-def runOneExperiment(map, agent, spawn_type, results):
+def runOneExperiment(map, agent, spawn_type, results, animate=False):
     """ Runs on experiment for a certain instance (i.e a certain map-nb_agents-spawn_type combination)
 
     Args:
@@ -53,10 +53,10 @@ def runOneExperiment(map, agent, spawn_type, results):
     else:
         results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
 
-    testPathSimulation(args, my_map, starts, goals, paths)
+    testPathSimulation(args, my_map, starts, goals, paths, animate)
 
 
-def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agents = 2, min_map = 0):
+def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agents = 2, min_map = 0, animate = False):
     """ Generates experiments for all possible combinations of maps, nb of agents and spawn types until
         the coefficient of variation stabilises  
 
@@ -88,7 +88,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                     or (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:]))):
                     
                     # runs one experiment
-                    runOneExperiment(map, agent, spawn_type, results)
+                    runOneExperiment(map, agent, spawn_type, results, animate)
                     
                     data = results[key]
 
@@ -123,11 +123,11 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                 plt.show()
 
 
-def runSimulation(args):
+def runSimulation(args, animate=False):
     """ Runs the experiments and saves the results in a pickle structure
     """
 
-    generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, min_agents=3, args=args, results=results)
+    generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, min_agents=3, args=args, results=results, animate=animate)
     # save the dicionary
     with open('saved_dictionary.pkl', 'wb') as f:
         pickle.dump(results, f)
@@ -143,12 +143,14 @@ def testExistingMaps(args):
     
     # my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     # my_map = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]]
-    # starts = [(0,1),(0,0)]
-    # goals = [(0,0),(3,2)]
-    my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
-    paths, time = utilities.processArgs(args, my_map, starts, goals )
-    testPathSimulation(args, my_map, starts, goals, paths)
+    starts = [(1, 1), (2, 0), (7, 1)]
+    goals = [(1, 20), (0, 20), (2, 21)]
+    my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
+    # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
+    paths, time = utilities.processArgs(args, my_map, starts, goals)
+    testPathSimulation(args, my_map, starts, goals, paths, animate=True)
     pass
+
 
 if __name__ == '__main__':
         
@@ -157,7 +159,7 @@ if __name__ == '__main__':
 
     testExistingMaps(args)
 
-    #runSimulation(args)
+    #runSimulation(args, animate=False)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

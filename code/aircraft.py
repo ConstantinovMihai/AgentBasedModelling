@@ -21,6 +21,7 @@ class AircraftDistributed(object):
         self.id = agent_id
         self.heuristics = heuristics
         self.current_heuristics = heuristics
+        self.waiting = 0 # time spent waiting
         # list with the constraints for the agent
         self.constraints = []
         self.location = start
@@ -79,9 +80,9 @@ class AircraftDistributed(object):
                 else:
                     self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard': True})
         # at time step 0 the agents ahve no idea where other agents are starting 
-        else:
+        #else:
             # for the first time step, employ the bubble constraints technique
-            self.addBubbleConstraints(time, prox_loc)
+        #    self.addBubbleConstraints(time, prox_loc)
 
 
 

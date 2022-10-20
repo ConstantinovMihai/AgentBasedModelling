@@ -6,7 +6,7 @@ from single_agent_planner import computeHeuristics, a_star, getLocation, getSumO
 
 def detectCollision(path1, path2):
     ##############################
-    # Task 3.1: Return the first collision that occurs between two robot paths (or None if there is no collision)
+    # Return the first collision that occurs between two robot paths (or None if there is no collision)
     #           There are two types of collisions: vertex collision and edge collision.
     #           A vertex collision occurs if both robots occupy the same location at the same timestep
     #           An edge collision occurs if the robots swap their location at the same timestep.
@@ -25,7 +25,7 @@ def detectCollision(path1, path2):
 
 def detectCollisions(paths):
     ##############################
-    # Task 3.1: Return a list of first collisions between all robot pairs.
+    # Return a list of first collisions between all robot pairs.
     #           A collision can be represented as dictionary that contains the id of the two robots, the vertex or edge
     #           causing the collision, and the timestep at which the collision occurred.
     #           You should use your detect_collision function to find a collision between two robots.
@@ -46,7 +46,7 @@ def detectCollisions(paths):
 
 def standardSplitting(collision):
     ##############################
-    # Task 3.2: Return a list of (two) constraints to resolve the given collision
+    #  Return a list of (two) constraints to resolve the given collision
     #           Vertex collision: the first constraint prevents the first agent to be at the specified location at the
     #                            specified timestep, and the second constraint prevents the second agent to be at the
     #                            specified location at the specified timestep.
@@ -74,7 +74,7 @@ def standardSplitting(collision):
 
 def disjointSplitting(collision):
     ##############################
-    # Task 4.1: Return a list of (two) constraints to resolve the given collision
+    # Return a list of (two) constraints to resolve the given collision
     #           Vertex collision: the first constraint enforces one agent to be at the specified location at the
     #                            specified timestep, and the second constraint prevents the same agent to be at the
     #                            same location at the timestep.
@@ -173,6 +173,8 @@ class CBSSolver(object):
             # if node has no collisions, return paths         
             if len(P['collisions']) == 0:
                 self.CPU_time = timer.time() - self.start_time
+                # print the results
+                self.print_results(root)
                 return P['paths'], self.CPU_time
 
             # convert collision to list of two constraints         
@@ -206,8 +208,8 @@ class CBSSolver(object):
                     
             #i +=1
 
-        #self.print_results(root)
-        #return root['paths']
+        self.print_results(root)
+        return root, self.CPU_time
         
 
 

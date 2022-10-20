@@ -50,11 +50,12 @@ def computeHeuristics(my_map, goal):
 
 
 def buildConstraintTable(constraints, agent):
-    ##############################
-    # Task 1.2/1.3: Return a table that constains the list of constraints of
-    #               the given agent for each time step. The table can be used
-    #               for a more efficient constraint violation check in the 
-    #               is_constrained function.
+    """
+    Return a table that constains the list of constraints of
+                   the given agent for each time step. The table can be used
+                   for a more efficient constraint violation check in the 
+                   is_constrained function.
+    """
     constraint_table = []
     max_time = 0
 
@@ -102,10 +103,6 @@ def getPath(goal_node):
 
 
 def isConstrained(curr_loc, next_loc, next_time, constraint_table):
-    ##############################
-    # Task 1.2/1.3: Check if a move from curr_loc to next_loc at time step next_time violates
-    #               any given constraint. For efficiency the constraints are indexed in a constraint_table
-    #               by time step, see build_constraint_table.
     constrained = False
     
     # check for times earlier than the latest constraint
@@ -148,10 +145,6 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
         constraints - constraints defining where robot should or cannot go at each timestep
     """
 
-    ##############################
-    # Task 1.1: Extend the A* search to search in the space-time domain
-    #           rather than space domain, only.
-    
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = 0
@@ -167,9 +160,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
     closed_list[(root['loc'],root['t_step'])] = root
     while len(open_list) > 0:
         curr = popNode(open_list)
-        #############################
-        # Task 1.4: Adjust the goal test condition to handle goal constraints
-
+    
         # if agent has reached goal location and there are no constraints posed on agent at a later time:
         # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
         if curr['loc'] == goal_loc and len(getPath(curr)) >= len(indexed_constraint_table) and distributed == False:
@@ -201,4 +192,5 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
                 closed_list[(child['loc'],child['t_step'])] = child
                 pushNode(open_list, child)
 
+   
     return None  # Failed to find solutions

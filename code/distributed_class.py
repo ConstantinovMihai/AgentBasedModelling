@@ -9,7 +9,6 @@ from aircraft import AircraftDistributed
 from cbs import detectCollision, detectCollisions
 from single_agent_planner import isConstrained, buildConstraintTable
 
-
 class DistributedPlanning(object):
     """ parent class for the planners_
     """
@@ -152,6 +151,19 @@ class DistributedPlanning(object):
 
         return wait_time 
 
+        
+    def printCollisions(self, paths):
+        """ Prints all the detected collisions in a list of paths
+
+        Args:
+            paths (list): list with the paths of agents
+            map (str) : the name of the map tested
+        """
+
+        collisions = detectCollisions(paths)
+        
+        if collisions:
+            print(f"Collisions detected in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
 
     def printResult(self, result):
@@ -160,6 +172,7 @@ class DistributedPlanning(object):
         Args:
             results (int): total cost of the simulation
         """
+
         print("\n Found a solution! \n")
         print("CPU time (s):    {:.2f}".format(self.CPU_time))
         print("Sum of costs:    {}".format(getSumOfCost(result)))

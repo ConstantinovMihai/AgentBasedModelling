@@ -3,17 +3,29 @@ This file contains the implemention of distributed planning WITHOUT COORDINATION
 """
 
 import random
+from turtle import st
 import numpy as np
 import time as timer
-from single_agent_planner import computeHeuristics, a_star, getSumOfCost
+from single_agent_planner import a_star
 from aircraft import AircraftDistributed
-from cbs import detectCollision, detectCollisions
+from cbs import detectCollisions
 from distributed_class import DistributedPlanning
-
 
 class DistributedPlanningSolverIndividual(DistributedPlanning):
     """A distributed planner where agents do not communicate with each other"""
     
+    def manuallySetEnvironment(self, my_map, starts, goals):
+        """ Manually set the map, starts and goals, useful for debugging purposes
+
+        Args:
+            my_map (string): the map set as a list of lists of Bools
+            starts (list): the list of start locations
+            goals (list): the list of goal locations
+        """
+        self.my_map = my_map
+        self.starts = starts
+        self.goals = goals
+        
 
     def modifyHeuristics(self, agent, hard_heur_factor, soft_heur_factor):
         """ Modifies the heuristic values of cells where a constraint is imposed for a certain agent
@@ -83,8 +95,11 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
             if (waiting_times[collision['a1'] < waiting_times[collision['a2']]]):
                 priority = collision['a2']
-    
-
+            
+            # TODO: see if we can make this work better than the previous
+            # if (waiting_times[collision['a1'] == waiting_times[collision['a2']]]):
+            #     priority = random.choice([collision['a1'], collision['a2']])
+            
             return priority
 
 
@@ -96,26 +111,26 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             waiting_times.append(agent.waiting)
        
         for agent in agents:
-                collided = False
-                # for each agent check if any of the collisions belong to it 
-                for collision in collisions:       
-                    
-                    # give the priority to the agent who waited the most so far
-                    # this is the tie-breaker for collisions
-                    priority = assignPriority(collision, waiting_times)
+           
+            collided = False
+            # for each agent check if any of the collisions belong to it 
+            for collision in collisions:       
+                
+                # give the priority to the agent who waited the most so far
+                # this is the tie-breaker for collisions
+                priority = assignPriority(collision, waiting_times)
 
-                    if agent.id == priority:
-                        # if the agent has a collision the first agent waits a timestep
-                        # TODO: decide over a tiebreaker
-                        agent.path.append(agent.location)
-                        collided = True
-                        break
+                if agent.id == priority:
+                    # if the agent has a collision the non-priority agent waits a timestep
+                    agent.path.append(agent.location)
+                    collided = True
+                    break
 
-                # if there are no collisions, append the intended location to the path
-                # and update the current location of the agent
-                if not collided:
-                    agent.path.append(agent.planned_path[0])
-                    agent.location = agent.planned_path[0]
+            # if there are no collisions, append the intended location to the path
+            # and update the current location of the agent
+            if not collided:
+                agent.path.append(agent.planned_path[0])
+                agent.location = agent.planned_path[0]
 
 
     def appendFinalPaths(self, agents, result):
@@ -159,7 +174,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<500:
             if self.time == 499:
-                print("TIME LIMIT HIT")
+                print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
             # create constraints which will be used to run planning for each agent
             for agent in agents:
@@ -180,9 +195,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # update the planned path
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
-                print(self.time)
-                print(agent.id)
-                print(path)
+                #print(self.time)
+                #print(agent.id)
+                #print(path)
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
@@ -193,6 +208,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         self.appendFinalPaths(agents, result)
 
         self.CPU_time = timer.time() - start_time
+        # check whether there are collisions
+        
+        self.printCollisions(result)    
         self.printResult(result)
 
         return result, self.CPU_time
