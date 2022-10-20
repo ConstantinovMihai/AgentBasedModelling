@@ -31,7 +31,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         """
         # TODO: check if clearing or recomputing the heuristics affects the behaviours of the model
         #agent.heuristics = computeHeuristics(agent.my_map, agent.goal)
-        agent.current_heuristics = agent.heuristics.copy()
+        agent.current_heuristics = copy.deepcopy(agent.heuristics)
         for constraint in agent.constraints:
             if constraint['loc'][0] in agent.heuristics:
                 if constraint['hard']:
@@ -191,29 +191,18 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<100:
+            print(self.time)
+            
             
             
             if self.time == 99:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
-            for agent in agents:
-                temp_map = copy.deepcopy(agent.my_map)
-
-            all_agent_locations = []
-            for idx, agent in enumerate(agents):
-                if agent.location == agent.goal:
-                    temp_map[agent.location[0]][agent.location[1]] = True
             
-            
-            for agent in agents:
-                if agent.location != agent.goal:
-                    heuristicss = computeHeuristics(temp_map, agent.goal)
-                    if agent.location not in heuristicss:
-                        agent.blockage = True
-                        print("Blockage")
 
             # create constraints which will be used to run planning for each agent
             for agent in agents:
+                print(agent.location)
                 # stores the locations of nearby agents
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc and the bubble method
@@ -226,8 +215,10 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 wait_time = self.waitingTime(agent)
                 
                 # h_value of wait location is increased by time spent waiting 
-                agent.heuristics[agent.path[-1]] += (self.wait_time_factor * wait_time)
+                
+                
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
+                agent.current_heuristics[agent.path[-1]] += (self.wait_time_factor * wait_time)
 
                 # update the planned path  
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)                
@@ -235,6 +226,23 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         
             # handle the possible collision situations       
             self.collisionHandling(agents)
+
+            for agent in agents:
+                temp_map = copy.deepcopy(agent.my_map)
+
+            all_agent_locations = []
+            for idx, agent in enumerate(agents):
+                if agent.location == agent.goal:
+                    temp_map[agent.location[0]][agent.location[1]] = True
+            
+            
+            for agent in agents:
+                agent.blockage = False
+                if agent.location != agent.goal:
+                    heuristicss = computeHeuristics(temp_map, agent.goal)
+                    if agent.location not in heuristicss:
+                        agent.blockage = True
+                        print("Blockage")
 
             
             
