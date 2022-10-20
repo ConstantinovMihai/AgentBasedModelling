@@ -28,6 +28,8 @@ class AircraftDistributed(object):
         # stores the path to goal
         self.path = []
         self.planned_path = []
+        # sense whether or not there is a blockage in its path
+        self.blockage = False
 
 
     def addBubbleConstraints(self, time, prox_loc):

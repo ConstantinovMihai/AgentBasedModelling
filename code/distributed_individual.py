@@ -2,15 +2,12 @@
 This file contains the implemention of distributed planning WITHOUT COORDINATION.
 """
 
-import random
-from turtle import st
 import numpy as np
 import time as timer
-from single_agent_planner import a_star, computeHeuristics
+from single_agent_planner import a_star
 from aircraft import AircraftDistributed
 from cbs import detectCollisions
 from distributed_class import DistributedPlanning
-import copy
 
 class DistributedPlanningSolverIndividual(DistributedPlanning):
     """A distributed planner where agents do not communicate with each other"""
@@ -26,7 +23,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         self.my_map = my_map
         self.starts = starts
         self.goals = goals
-        
+
 
     def modifyHeuristics(self, agent, hard_heur_factor, soft_heur_factor):
         """ Modifies the heuristic values of cells where a constraint is imposed for a certain agent
@@ -99,6 +96,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
             if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
                 priority = collision['a2']
+            
+            
             
             # TODO: see if we can make this work better than the previous
             # if (waiting_times[collision['a1'] == waiting_times[collision['a2']]]):
@@ -177,7 +176,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<500:
-            print(self.time)
             
             if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
@@ -200,35 +198,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
                 # update the planned path
-                
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
-                
+                print(f"agent with idx {idx} plans {path}")
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
-                #print(self.time)
-                #print(agent.id)
-                #print(path)
 
             # handle the possible collision situations       
             self.collisionHandling(agents)
-
-            
-            for agent in agents:
-                temp_map = copy.deepcopy(agent.my_map)
-
-            all_agent_locations = []
-            for idx, agent in enumerate(agents):
-                if agent.location == agent.goal:
-                    temp_map[agent.location[0]][agent.location[1]] = True
-            
-            
-            for agent in agents:
-                if agent.location != agent.goal:
-                    heuristicss = computeHeuristics(temp_map, agent.goal)
-                    if agent.location not in heuristicss:
-                        print("Blockage")
-
-
-
 
             # increment time
             self.time += 1
@@ -240,5 +215,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         
         self.printCollisions(result)    
         self.printResult(result)
+
 
         return result, self.CPU_time
