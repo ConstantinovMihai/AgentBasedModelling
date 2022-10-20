@@ -196,6 +196,22 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             if self.time == 99:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
 
+            for agent in agents:
+                temp_map = copy.deepcopy(agent.my_map)
+
+            all_agent_locations = []
+            for idx, agent in enumerate(agents):
+                if agent.location == agent.goal:
+                    temp_map[agent.location[0]][agent.location[1]] = True
+            
+            
+            for agent in agents:
+                if agent.location != agent.goal:
+                    heuristicss = computeHeuristics(temp_map, agent.goal)
+                    if agent.location not in heuristicss:
+                        agent.blockage = True
+                        print("Blockage")
+
             # create constraints which will be used to run planning for each agent
             for agent in agents:
                 # stores the locations of nearby agents
@@ -221,20 +237,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             self.collisionHandling(agents)
 
             
-            for agent in agents:
-                temp_map = copy.deepcopy(agent.my_map)
-
-            all_agent_locations = []
-            for idx, agent in enumerate(agents):
-                if agent.location == agent.goal:
-                    temp_map[agent.location[0]][agent.location[1]] = True
             
-            
-            for agent in agents:
-                if agent.location != agent.goal:
-                    heuristicss = computeHeuristics(temp_map, agent.goal)
-                    if agent.location not in heuristicss:
-                        print("Blockage")
 
             # increment time
             self.time += 1

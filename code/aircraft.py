@@ -74,7 +74,7 @@ class AircraftDistributed(object):
             # if no, then add the few next planned steps of the planned path as constraints
             # TODO: improve
             for neighbour in prox_loc:
-                if neighbour['reached_goal'] == False:
+                if self.blockage != True:
                     for t, constraint_loc in enumerate(neighbour['planned_path']):
                         self.constraints.append({'agent': self.id,'loc': [constraint_loc],'timestep': time+t+1, 'hard':False})
                     self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
