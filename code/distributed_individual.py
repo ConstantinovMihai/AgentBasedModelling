@@ -200,7 +200,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
                 # update the planned path
-                print(agent.my_map)
+                
                 path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
