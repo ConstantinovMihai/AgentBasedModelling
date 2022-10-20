@@ -77,8 +77,8 @@ class AircraftDistributed(object):
                         self.constraints.append({'agent': self.id,'loc': [constraint_loc],'timestep': time+t+1, 'hard':False})
                     self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
 
-                else:
-                    self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard': True})
+                # else:
+                #     self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard': True})
         # at time step 0 the agents ahve no idea where other agents are starting 
         #else:
             # for the first time step, employ the bubble constraints technique

@@ -165,8 +165,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
         # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
         if curr['loc'] == goal_loc and len(getPath(curr)) >= len(indexed_constraint_table) and distributed == False:
             return getPath(curr)
-        elif curr['loc'] == goal_loc and distributed == True:
+
+        elif curr['loc'] == goal_loc and distributed == True and not isConstrained(curr['loc'], curr['loc'], curr['t_step']+1, indexed_constraint_table):
+        
             return getPath(curr)
+
         for dir in range(5):
             child_loc = move(curr['loc'], dir)            
             # if child location is outside of map

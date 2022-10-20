@@ -97,9 +97,11 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             #print(waiting_times[collision['a1']])
             #print(waiting_times[collision['a2']])
 
+            # if an agent is already in its goal, it should lose priority
+
             if (waiting_times[collision['a1'] > waiting_times[collision['a2']]]):
                 priority = collision['a2']
-            
+
             # TODO: see if we can make this work better than the previous
             # if (waiting_times[collision['a1'] == waiting_times[collision['a2']]]):
             #     priority = random.choice([collision['a1'], collision['a2']])
@@ -118,18 +120,33 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
            
             collided = False
             # for each agent check if any of the collisions belong to it 
+            
             for collision in collisions:       
                 
                 # give the priority to the agent who waited the most so far
                 # this is the tie-breaker for collisions
                 priority = assignPriority(collision, waiting_times)
 
+                # if an agent who reached their goal blocks the path of another agent, make it move out of the way
+                if agent.goal == agent.location:
+                    print("DO I EVEN REACH THIS POIITN??")
+                    if agent.id == collision['a1'] or agent.id == collision['a2']:
+                        #constraint the agent goal for the next time step to force it to move
+                        agent.constraints.append({'agent': agent.id,'loc': [agent.location],'timestep': self.time + 1, 'hard':False})
+                        # for t, constraint_loc in enumerate(agent.planned_path):
+                            # agent.constraints.append({'agent': agent.id,'loc': [constraint_loc],'timestep': self.time+t+1, 'hard':False})
+                        path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
+                        print (f"agent id {agent.id} path is {path}")
+                        self.appendPlannedPath(agent, path, self.plan_broadcast)
+
+
                 if agent.id == priority:
                     # if the agent has a collision the non-priority agent waits a timestep
                     agent.path.append(agent.location)
                     collided = True
                     break
-
+                
+                
             # if there are no collisions, append the intended location to the path
             # and update the current location of the agent
             if not collided:
@@ -176,7 +193,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals
-        while not all(self.goalsReached(agents)) and self.time<500:
+        while not all(self.goalsReached(agents)) and self.time<100:
             print(self.time)
             
             if self.time == 499:
@@ -199,15 +216,10 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 agent.heuristics[agent.path[-1]] += (self.wait_time_factor * wait_time)
                 self.modifyHeuristics(agent, self.hard_heur_factor, self.soft_heur_factor)
 
-                # update the planned path
-                
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
-                
+                # update the planned path  
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)                
                 self.appendPlannedPath(agent, path, self.plan_broadcast)
-                #print(self.time)
-                #print(agent.id)
-                #print(path)
-
+        
             # handle the possible collision situations       
             self.collisionHandling(agents)
 
@@ -226,9 +238,6 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     heuristicss = computeHeuristics(temp_map, agent.goal)
                     if agent.location not in heuristicss:
                         print("Blockage")
-
-
-
 
             # increment time
             self.time += 1
