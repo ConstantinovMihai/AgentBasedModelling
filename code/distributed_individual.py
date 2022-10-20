@@ -126,14 +126,12 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
                 # if an agent who reached their goal blocks the path of another agent, make it move out of the way
                 if agent.goal == agent.location:
-                    print("DO I EVEN REACH THIS POIITN??")
                     if agent.id == collision['a1'] or agent.id == collision['a2']:
                         #constraint the agent goal for the next time step to force it to move
                         agent.constraints.append({'agent': agent.id,'loc': [agent.location],'timestep': self.time + 1, 'hard':False})
                         # for t, constraint_loc in enumerate(agent.planned_path):
                             # agent.constraints.append({'agent': agent.id,'loc': [constraint_loc],'timestep': self.time+t+1, 'hard':False})
                         path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
-                        print (f"agent id {agent.id} path is {path}")
                         self.appendPlannedPath(agent, path, self.plan_broadcast)
 
 
@@ -191,7 +189,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
 
         # simulate until all the agents reached their goals
         while not all(self.goalsReached(agents)) and self.time<100:
-            print(self.time)
+           
             
             if self.time == 499:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
