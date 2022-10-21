@@ -69,7 +69,7 @@ class DistributedPlanning(object):
 
         Args:
             agents (list): list with the agent objects
-        Returns a list with bool values (did the agent reached its goal?)
+        Returns a list with bool values (did the agent reach its goal?)
         """
 
         reached_goal = []
