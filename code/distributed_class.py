@@ -109,9 +109,9 @@ class DistributedPlanning(object):
                 #  who are in the proximity of the starting agent (distance < radius)
                 # along with location, radar returns whether agent has reached its goal or not
                 if distanceAgents(start_agent.location, agent.location) < self.radar_radius and agent.location == agent.goal:
-                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True, 'blocked':agent.blockage})
                 elif distanceAgents(start_agent.location, agent.location) < self.radar_radius:
-                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False, 'blocked':agent.blockage})
 
         return prox_loc
 
@@ -164,6 +164,8 @@ class DistributedPlanning(object):
         
         if collisions:
             print(f"Collisions detected in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
+            print(collisions)
+            raise Exception('Collision')
 
 
     def printResult(self, result):

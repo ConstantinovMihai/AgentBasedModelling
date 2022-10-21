@@ -41,9 +41,9 @@ def createsSimulationInput(map_nb,nb_agents,spawn_type):
             goal_locations.append(goal_location)
         # if agents can spawn on either side of map
         elif spawn_type == 1:
-            start_location = (random.choice(range(0, 9)),random.choice([0,1]))              
+            start_location = (random.choice(range(0, 9)),random.choice([0,1,20,21]))              
             while start_location in start_locations:
-                start_location = (random.choice(range(0, 9)),random.choice([0,1]))               
+                start_location = (random.choice(range(0, 9)),random.choice([0,1,20,21]))               
             start_locations.append(start_location)
 
             # if agent spawned on left side of map, create goal location on opposite side
@@ -55,7 +55,7 @@ def createsSimulationInput(map_nb,nb_agents,spawn_type):
             if start_location[1] == 20 or start_location[1] == 21:
                 goal_location = (random.choice(range(0, 9)),random.choice([0,1]))
                 while goal_location in goal_locations:
-                    goal_location = (random.choice(range(0, 9)),random.choice([20,21]))
+                    goal_location = (random.choice(range(0, 9)),random.choice([0,1]))
             goal_locations.append(goal_location)
     
     assert(len(start_locations) == len(goal_locations))

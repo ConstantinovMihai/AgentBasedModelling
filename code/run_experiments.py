@@ -73,7 +73,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
     # iterates among all the maps, agents and spawn types
     for map in range(min_map, nb_maps):
         for agent in range(min_agents, max_agents+1):
-            for spawn_type in range(nb_spawns):
+            for spawn_type in nb_spawns:
                 # name of the key in the results dict
                 key = f"map_{map}-agent_{agent}-spawn_{spawn_type}"
 
@@ -127,7 +127,7 @@ def runSimulation(args, animate=False):
     """ Runs the experiments and saves the results in a pickle structure
     """
 
-    generateExperiments(nb_maps=2, max_agents=3, nb_spawns=1, min_agents=3, args=args, results=results, animate=animate)
+    generateExperiments(nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=3, args=args, results=results, animate=animate, min_map=2)
     # save the dicionary
     with open('saved_dictionary.pkl', 'wb') as f:
         pickle.dump(results, f)
@@ -143,9 +143,9 @@ def testExistingMaps(args):
     
     # my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     # my_map = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]]
-    starts =[(7, 1), (7, 0), (6, 0)]
-    goals =  [(4, 20), (0, 21), (7, 20)]
-    my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
+    starts =[(7, 0), (5, 1), (0, 0), (1, 1), (8, 0), (3, 20)]
+    goals =    [(8, 20), (7, 20), (6, 21), (6, 20), (7, 21), (1, 0)]
+    my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
     testPathSimulation(args, my_map, starts, goals, paths, animate=True)

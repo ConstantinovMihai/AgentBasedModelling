@@ -1,11 +1,3 @@
-from traceback import print_tb
+import create_sim2
 
-
-c = {'a1' : 5}
-
-print(c)
-
-a = {}
-
-if not a:
-    print("ceau")
+print(create_sim2.createsSimulationInput(2,6,1))
