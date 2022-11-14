@@ -233,30 +233,37 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     # print(agent.id,"Blockage") 
 
     def adjustHeuristics(self, agent, prox_loc):
-        """ NOT USED IN CURRENT VERSION
+        """ 
         Modifies the heuristic values of cells where a constraint is imposed for a certain agent
         """
         # TODO: check if clearing or recomputing the heuristics affects the behaviours of the model
         #agent.heuristics = computeHeuristics(agent.my_map, agent.goal)
+        
         agent.current_heuristics = copy.deepcopy(agent.heuristics)
         for neighbour in prox_loc:
             # if the neighbour has priority
-            if neighbour['opponent_id'] < agent.id:
-                print(type(self.heuristics[0]))
-                print("")
-                print(neighbour['location'])
+            if neighbour['opponent_id'] > agent.id:                
                 if neighbour['reached_goal']:
-                    #TODO: this cell will be occupied forever as the agent reached its goal
-                   
-                    agent.current_heuristics[neighbour['location']] = self.hard_heur_factor * self.heuristics[neighbour['location']]
-                    for planned_loc in neighbour['planned_path']:
-                        print(planned_loc)
+                    #TODO: this cell will be occupied forever as the agent reached its goal   
+                    # print(neighbour['location'])
+                    # print(neighbour['planned_path'])       
+                    # agent.current_heuristics[neighbour['location']] = self.hard_heur_factor * agent.heuristics[neighbour['location']]                   
+                    for i, planned_loc in enumerate(neighbour['planned_path']):
+                        agent.current_heuristics[planned_loc] = (i + self.soft_heur_factor) * agent.heuristics[planned_loc]
+
                 else:
-                    # TODO: tune the parameters (the cell might become free in the future) 
-                    agent.current_heuristics[neighbour['location']] = self.soft_heur_factor * self.heuristics[neighbour['location']]
-                    
-                    for planned_loc in neighbour['planned_path']:
-                        print(planned_loc)
+                    # print(neighbour['location'])
+                    # print(neighbour['planned_path'])    
+                    # TODO: tune the parameters (the cell might become free in the future)                
+                    # agent.current_heuristics[neighbour['location']] = self.soft_heur_factor * agent.heuristics[neighbour['location']]                 
+                    for i, planned_loc in enumerate(neighbour['planned_path']):
+                        agent.current_heuristics[planned_loc] = (i + self.soft_heur_factor) * agent.heuristics[planned_loc]
+                # print(self.time)
+                # print("general",agent.heuristics)
+                # print("current",agent.current_heuristics)
+        
+
+    
 
 
     def findSolution(self):
@@ -280,7 +287,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # the penalty is randomized in order for tie breaking in certain edge cases
                 # the agent remembers these spots where it has spent time waiting regardless of if it has since moved on
                 wait_time = self.waitingTime(agent)
-                print(type(agent.heuristics))
+                
                 agent.heuristics[agent.path[-1]] += (wait_time*random.uniform(0.5, 1.5))
 
                 # fnds and stores the locations of nearby agents                
@@ -294,7 +301,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 agent.planned_path = []
 
                 # update the planned path                 
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 # the planned path is stored                
                 self.appendPlannedPath(agent, path, self.plan_broadcast)                              
         
