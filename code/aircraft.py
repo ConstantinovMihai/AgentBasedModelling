@@ -4,6 +4,8 @@ This file contains the AircraftDistributed class that can be used to implement i
 Code in this file is just provided as guidance, you are free to deviate from it.
 """
 
+import copy
+
 class AircraftDistributed(object):
     """Aircraft object to be used in the distributed planner."""
 
@@ -84,6 +86,8 @@ class AircraftDistributed(object):
                 # Since i am not blocked, i should impose heavy penalty on that location to motivate myself to take another route
                 for t in range (0,(25)):                      
                     self.constraints.append({'agent': self.id,'loc': [neighbour['planned_path'][0]],'timestep': time+t+1, 'hard':False})
+
+   
            
 
 
