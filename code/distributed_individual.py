@@ -242,14 +242,16 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         agent.current_heuristics = copy.deepcopy(agent.heuristics)
         for neighbour in prox_loc:
             # if the neighbour has priority
-            if neighbour['opponent_id'] > agent.id:                
+            if neighbour['opponent_id'] < agent.id:
+                # print("")               
                 if neighbour['reached_goal']:
                     #TODO: this cell will be occupied forever as the agent reached its goal   
                     # print(neighbour['location'])
                     # print(neighbour['planned_path'])       
                     # agent.current_heuristics[neighbour['location']] = self.hard_heur_factor * agent.heuristics[neighbour['location']]                   
                     for i, planned_loc in enumerate(neighbour['planned_path']):
-                        agent.current_heuristics[planned_loc] = (i + self.soft_heur_factor) * agent.heuristics[planned_loc]
+                        agent.current_heuristics[planned_loc] = (len(neighbour['planned_path']) -i) * self.hard_heur_factor * agent.heuristics[planned_loc]
+                        # print((len(neighbour['planned_path']) -i) * self.hard_heur_factor)
 
                 else:
                     # print(neighbour['location'])
@@ -257,7 +259,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     # TODO: tune the parameters (the cell might become free in the future)                
                     # agent.current_heuristics[neighbour['location']] = self.soft_heur_factor * agent.heuristics[neighbour['location']]                 
                     for i, planned_loc in enumerate(neighbour['planned_path']):
-                        agent.current_heuristics[planned_loc] = (i + self.soft_heur_factor) * agent.heuristics[planned_loc]
+                        agent.current_heuristics[planned_loc] = (len(neighbour['planned_path']) -i)  * self.soft_heur_factor * agent.heuristics[planned_loc]
+                        # print((len(neighbour['planned_path']) -i) * self.hard_heur_factor)
                 # print(self.time)
                 # print("general",agent.heuristics)
                 # print("current",agent.current_heuristics)
@@ -269,6 +272,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
     def findSolution(self):
     
         """ Finds paths for all agents from their start locations to their goal locations."""
+        time_limit_reached = False
         start_time = timer.time()
         agents = self.initialiseAgents()
         # this stores the paths for each agent. This list is filled once a final solution is found
@@ -288,7 +292,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # the agent remembers these spots where it has spent time waiting regardless of if it has since moved on
                 wait_time = self.waitingTime(agent)
                 
-                agent.heuristics[agent.path[-1]] += (wait_time*random.uniform(0.5, 1.5))
+                agent.heuristics[agent.path[-1]] += wait_time
 
                 # fnds and stores the locations of nearby agents                
                 prox_loc = self.radarScanner(agent, agents)
@@ -324,6 +328,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         if self.time == 500:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
                 #raise Exception('TIME LIMIT')
+                time_limit_reached = True
+                
 
 
         return result, self.CPU_time

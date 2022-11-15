@@ -110,9 +110,9 @@ class DistributedPlanning(object):
                 #  who are in the proximity of the starting agent (distance < radius)
                 # along with location, radar returns whether agent has reached its goal or not
                 if distanceAgents(start_agent.location, agent.location) < self.radar_radius and agent.location == agent.goal:
-                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True, 'blocked':agent.blockage, 'opponent_id': agent.id})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True, 'blocked':agent.blockage, 'opponent_id': agent.id, 'opponent_dist_to_goal': agent.heuristics[agent.location]})
                 elif distanceAgents(start_agent.location, agent.location) < self.radar_radius:
-                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False, 'blocked':agent.blockage, 'opponent_id' : agent.id})
+                    prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':False, 'blocked':agent.blockage, 'opponent_id' : agent.id, 'opponent_dist_to_goal': agent.heuristics[agent.location]})
 
         return prox_loc
 
@@ -150,7 +150,7 @@ class DistributedPlanning(object):
         
         agent.waiting = wait_time
 
-        return wait_time 
+        return wait_time
 
         
     def printCollisions(self, paths):
