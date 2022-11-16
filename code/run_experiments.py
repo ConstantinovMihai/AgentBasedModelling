@@ -70,6 +70,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
         args (string): command line arguments
         min_agents (int) : minimum number of agents in all the simulations
         min_map (int) : minimum number of maps in all simulations (for debugging purposes)
+        perc_fill (float) : the maximum percentage of filled neighbouring cells allowed
     """
 
     # iterates among all the maps, agents and spawn types
@@ -127,6 +128,10 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
 
 def runSimulation(args, animate=False, perc_fill = 50):
     """ Runs the experiments and saves the results in a pickle structure
+    Args:
+        args (str) : string with the arguments passed through the terminal by the user
+        animeate (False) : when set True, the animation of the agents will be showed
+        perc_fill (float) : the maximum percentage of filled neighbouring cells allowed
     """
 
     generateExperiments(nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=8, args=args, results=results, animate=animate, min_map=2, perc_fill=perc_fill)
