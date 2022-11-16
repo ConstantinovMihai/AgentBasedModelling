@@ -27,7 +27,7 @@ def testPathSimulation(args, my_map, starts, goals, paths, animate = False):
         animation.show() 
 
 
-def runOneExperiment(map, agent, spawn_type, results, animate=False):
+def runOneExperiment(map, agent, spawn_type, results, animate=False, fill_perc = 50):
     """ Runs on experiment for a certain instance (i.e a certain map-nb_agents-spawn_type combination)
 
     Args:
@@ -36,7 +36,7 @@ def runOneExperiment(map, agent, spawn_type, results, animate=False):
         spawn_type (_type_): _description_
         results (_type_): _description_
     """
-    my_map, starts, goals = createsSimulationInput(map, agent, spawn_type)
+    my_map, starts, goals = createsSimulationInput(map, agent, spawn_type, fill_perc)
                     
     # get paths and time for the simulation
     paths, time = utilities.processArgs(args, my_map, starts, goals )
@@ -56,7 +56,7 @@ def runOneExperiment(map, agent, spawn_type, results, animate=False):
     testPathSimulation(args, my_map, starts, goals, paths, animate)
 
 
-def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agents = 2, min_map = 0, animate = False):
+def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agents = 2, min_map = 0, animate = False, perc_fill = 50):
     """ Generates experiments for all possible combinations of maps, nb of agents and spawn types until
         the coefficient of variation stabilises  
 
@@ -68,6 +68,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
         args (string): command line arguments
         min_agents (int) : minimum number of agents in all the simulations
         min_map (int) : minimum number of maps in all simulations (for debugging purposes)
+        perc_fill (float) : the maximum percentage of filled neighbouring cells allowed
     """
 
     # iterates among all the maps, agents and spawn types
@@ -88,7 +89,7 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                     or (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:]))):
                     
                     # runs one experiment
-                    runOneExperiment(map, agent, spawn_type, results, animate)
+                    runOneExperiment(map, agent, spawn_type, results, animate, perc_fill)
                     
                     data = results[key]
 
@@ -123,11 +124,15 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                 plt.show()
 
 
-def runSimulation(args, animate=False):
+def runSimulation(args, animate=False, perc_fill = 50):
     """ Runs the experiments and saves the results in a pickle structure
+    Args:
+        args (str) : string with the arguments passed through the terminal by the user
+        animeate (False) : when set True, the animation of the agents will be showed
+        perc_fill (float) : the maximum percentage of filled neighbouring cells allowed
     """
 
-    generateExperiments(nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=3, args=args, results=results, animate=animate, min_map=2)
+    generateExperiments(nb_maps=3, max_agents=13, nb_spawns=[1], min_agents=12, args=args, results=results, animate=animate, min_map=2, perc_fill=perc_fill)
     # save the dicionary
     with open('saved_dictionary.pkl', 'wb') as f:
         pickle.dump(results, f)
@@ -159,7 +164,7 @@ if __name__ == '__main__':
 
     # testExistingMaps(args)
 
-    runSimulation(args, animate=False)
+    runSimulation(args, animate=True, perc_fill=50)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:
