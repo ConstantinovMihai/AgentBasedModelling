@@ -3,6 +3,7 @@ import random
 
 random.seed(421)
 
+# this file contains the functions to generate the spawn and goal locations of the agents
 
 def neighboursFilled(map : list, goal_locations : list, prop_location : tuple, y_spawn : list):
     """ computes the percentage of viable neighbours which are filled
@@ -25,7 +26,6 @@ def neighboursFilled(map : list, goal_locations : list, prop_location : tuple, y
                     viable_filled += 1
 
     return (viable_filled / tot_viable) * 100
-
 
 
 def neighboursFilledGeneral(map : list, goal_locations : list, prop_location : tuple, y_spawn : list, perc_fill : float = 50):

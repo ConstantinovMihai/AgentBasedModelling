@@ -91,6 +91,9 @@ class DistributedPlanning(object):
                 # compute the distance between the starting agent and all the others, and store the locations of the ones
                 #  who are in the proximity of the starting agent (distance < radius)
                 # along with location, radar returns whether agent has reached its goal or not
+                # also whether the neighbour agent is blocked from its final goal
+                # also stores the neighbour id
+                # and the distance the opponent has to its goal
                 if distanceAgents(start_agent.location, agent.location) < self.radar_radius and agent.location == agent.goal:
                     prox_loc.append({'location':agent.location,'planned_path':agent.planned_path,'reached_goal':True, 'blocked':agent.blockage, 'opponent_id': agent.id, 'opponent_dist_to_goal': agent.heuristics[agent.location]})
                 elif distanceAgents(start_agent.location, agent.location) < self.radar_radius:
