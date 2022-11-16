@@ -35,6 +35,7 @@ class DistributedPlanning(object):
         # the factor by which the wait time increases the heuristic value for the cell the agent is waiting on
         self.wait_time_factor = heuristics[0]
         # the factor by which the heuristic value of a cell with a hard constraint on it increases
+        # this applies to cells where agents have reached their goal
         self.hard_heur_factor = heuristics[1]
         # the factor by which the heuristic value of a cell with a hard constraint on it increases
         self.soft_heur_factor = heuristics[2]
@@ -46,23 +47,6 @@ class DistributedPlanning(object):
             self.heuristics.append(computeHeuristics(my_map, goal))
 
         self.time = 0 # this is going to incrementaly increase and decisions are going to be made at each timestep
-    
-
-    def constraintsInPath(self, path, agent):
-        """ check whether there are constraints in the path of an agent
-        Args:
-            path (list): the planned path for the agent
-            agent (AircraftDistributed): the agent object 
-        """
-        # build constraint table for this agent
-        indexed_constraint_table = buildConstraintTable(agent.constraints, agent.id)
-        for idx, loc in enumerate(path):
-            if idx < len(path) - 1:
-                
-                if isConstrained(loc, path[idx + 1], self.time + idx, indexed_constraint_table):
-                    return True
-        # no constraints in the way 
-        return False
 
     
     def goalsReached(self, agents):
@@ -100,8 +84,6 @@ class DistributedPlanning(object):
 
             return np.sqrt((loc1[0] - loc2[0]) * (loc1[0] - loc2[0]) + (loc1[1] - loc2[1]) * (loc1[1] - loc2[1]))
 
-
-        start_loc = start_agent.location
         prox_loc = []
         # creates a list with all other agents' locations
         for agent in agents:

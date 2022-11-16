@@ -39,8 +39,7 @@ def detectCollisions(paths):
                 location, t = detectCollision(paths[i], paths[j])
                 # append collision
                 collisions.append({'a1': i, 'a2': j, 'loc': location, 'timestep': t})
-            
-            
+     
     return collisions
 
 

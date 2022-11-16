@@ -43,8 +43,7 @@ class AircraftDistributed(object):
             time (int): the time at which the constraints are added
             prox_loc (list) : the locations at which other agents are (and have to be avoided)
         """
-        # reset the constraints list
-        self.constraints = []       
+
         '''
         # for each neighbouring agent, check if it reached its goal
         # also check if the current agent is blocked, if this is the case, no constraints should be added
@@ -63,14 +62,21 @@ class AircraftDistributed(object):
                 for t in range (0,(25)):                      
                     self.constraints.append({'agent': self.id,'loc': [neighbour['planned_path'][0]],'timestep': time+t+1, 'hard':False})
         '''
+
+        # reset the constraints list for this timestep
+        self.constraints = []       
+        # for each neigbour detected by the agent
         for neighbour in prox_loc:
+            # if current agent's path to its goal is not blocked
             if self.blockage == False:
-                print(neighbour['planned_path'])
+                # in time step 0 agents do not have a planned path yet
                 if time > 0:
+                    # append the neighbour's intended next location as a constraint
                     self.constraints.append({'agent': self.id,'loc': neighbour['planned_path'][0],'timestep': time+1, 'hard':False})
+                # append the neighbours current location as a constraint in the next time step
+                # this is for the case where the neighbour is forced to wait due to a conflict and cannot execute its planned path
                 self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
    
-           
 
 
 
