@@ -149,8 +149,8 @@ def testExistingMaps(args):
     """
     
     
-    starts = [(3, 0), (2, 0), (7, 21), (4, 1), (5, 1), (4, 0), (7, 1), (0, 1), (8, 21)]
-    goals = [(6, 21), (4, 20), (6, 0), (6, 20), (4, 21), (7, 21), (1, 21), (3, 21), (6, 1)]
+    starts = [(3, 20), (2, 20), (7, 20), (8, 21), (0, 21), (5, 20), (5, 0), (4, 21), (5, 1)]
+    goals = [(6, 0), (4, 1), (2, 0), (3, 0), (1, 1), (5, 1), (1, 20), (0, 1), (6, 21)]
     my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     testExistingMaps(args)
 
-    # runSimulation(args, animate=False, perc_fill = 50)
+    # runSimulation(args, animate=False, perc_fill = 33)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

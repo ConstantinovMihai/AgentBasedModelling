@@ -86,6 +86,11 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     if agent.id == collision['a1'] or agent.id == collision['a2']:
                         #constrain the agent goal for the next time step to force it to move away
                         agent.constraints.append({'agent': agent.id,'loc': [agent.location],'timestep': self.time + 1, 'hard':False})
+                        print(self.time)
+                        print(self.goals)
+                        for goal in self.goals:
+                            print(goal)
+                            agent.constraints.append({'agent': agent.id,'loc': [goal],'timestep': self.time + 1, 'hard':False})
                         # recalculate path
                         path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)               
                         # update the agents intended path
