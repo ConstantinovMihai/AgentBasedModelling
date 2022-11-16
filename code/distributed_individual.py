@@ -232,43 +232,80 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                     agent.blockage = True
                     # print(agent.id,"Blockage") 
 
+    def adjustHeuristics(self, agent, prox_loc):
+        """ 
+        Modifies the heuristic values of cells where a constraint is imposed for a certain agent
+        """
+        # TODO: check if clearing or recomputing the heuristics affects the behaviours of the model
+        #agent.heuristics = computeHeuristics(agent.my_map, agent.goal)
+        
+        agent.current_heuristics = copy.deepcopy(agent.heuristics)
+        for neighbour in prox_loc:
+            # if the neighbour has priority
+            if neighbour['opponent_id'] < agent.id:
+                # print("")               
+                if neighbour['reached_goal']:
+                    #TODO: this cell will be occupied forever as the agent reached its goal   
+                    # print(neighbour['location'])
+                    # print(neighbour['planned_path'])       
+                    # agent.current_heuristics[neighbour['location']] = self.hard_heur_factor * agent.heuristics[neighbour['location']]                   
+                    for i, planned_loc in enumerate(neighbour['planned_path']):
+                        agent.current_heuristics[planned_loc] = (len(neighbour['planned_path']) -i) * self.hard_heur_factor * agent.heuristics[planned_loc]
+                        # print((len(neighbour['planned_path']) -i) * self.hard_heur_factor)
+
+                else:
+                    # print(neighbour['location'])
+                    # print(neighbour['planned_path'])    
+                    # TODO: tune the parameters (the cell might become free in the future)                
+                    # agent.current_heuristics[neighbour['location']] = self.soft_heur_factor * agent.heuristics[neighbour['location']]                 
+                    for i, planned_loc in enumerate(neighbour['planned_path']):
+                        agent.current_heuristics[planned_loc] = (len(neighbour['planned_path']) -i)  * self.soft_heur_factor * agent.heuristics[planned_loc]
+                        # print((len(neighbour['planned_path']) -i) * self.hard_heur_factor)
+                # print(self.time)
+                # print("general",agent.heuristics)
+                # print("current",agent.current_heuristics)
+        
+
+    
+
 
     def findSolution(self):
     
         """ Finds paths for all agents from their start locations to their goal locations."""
+        time_limit_reached = False
         start_time = timer.time()
         agents = self.initialiseAgents()
         # this stores the paths for each agent. This list is filled once a final solution is found
         result = []
 
         # simulate until all the agents reached their goals. A time limit is also imposed in case the algorithm cannot find a solution
-        while not all(self.goalsReached(agents)) and self.time<500:
-            
-            # for each agent, the amount of time they have been in the same cell without moving is calculated
-            for agent in agents:
-                wait_time = self.waitingTime(agent)
+        while not all(self.goalsReached(agents)) and self.time<500:               
             
             # Find if any agents are blocked from reaching their paths by agents who have already reached their goal
             self.findBlockages(agents)
             
             # create constraints which will be used to run planning for each agent
             for agent in agents:
-                # fnds and stores the locations of nearby agents                
-                prox_loc = self.radarScanner(agent, agents)
-                # generates constraints using the prox_loc
-                agent.addConstraints(self.time, prox_loc)
-                
-            # run planning for each agent
-            for agent in agents:
-                agent.planned_path = []                
 
                 # the heuristic values of certain locations for this agent are adjusted to include penalties for a location where the agent has spent time waiting
                 # the penalty is randomized in order for tie breaking in certain edge cases
                 # the agent remembers these spots where it has spent time waiting regardless of if it has since moved on
-                agent.heuristics[agent.path[-1]] += (wait_time*random.uniform(0.5, 1.5))
+                wait_time = self.waitingTime(agent)
+                
+                agent.heuristics[agent.path[-1]] += wait_time
+
+                # fnds and stores the locations of nearby agents                
+                prox_loc = self.radarScanner(agent, agents)
+                # generates constraints using the prox_loc
+                agent.addConstraints(self.time, prox_loc)
+                self.adjustHeuristics(agent, prox_loc)
+                
+            # run planning for each agent
+            for agent in agents:
+                agent.planned_path = []
 
                 # update the planned path                 
-                path = a_star(agent.my_map, agent.location, agent.goal, agent.heuristics, agent.id, agent.constraints, self.time, True)
+                path = a_star(agent.my_map, agent.location, agent.goal, agent.current_heuristics, agent.id, agent.constraints, self.time, True)
                 # the planned path is stored                
                 self.appendPlannedPath(agent, path, self.plan_broadcast)                              
         
@@ -291,6 +328,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         if self.time == 500:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
                 #raise Exception('TIME LIMIT')
+                time_limit_reached = True
+                
 
 
         return result, self.CPU_time

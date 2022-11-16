@@ -4,6 +4,8 @@ This file contains the AircraftDistributed class that can be used to implement i
 Code in this file is just provided as guidance, you are free to deviate from it.
 """
 
+import copy
+
 class AircraftDistributed(object):
     """Aircraft object to be used in the distributed planner."""
 
@@ -21,41 +23,17 @@ class AircraftDistributed(object):
         self.id = agent_id
         self.heuristics = heuristics
         self.current_heuristics = heuristics
-        self.waiting = 0 # time spent waiting
         # list with the constraints for the agent
         self.constraints = []
+        self.waiting = 0
         self.location = start
         # stores the path to goal
         self.path = []
+        # stores the path the agent intends to take at any time iteration in the simulation
         self.planned_path = []
         # sense whether or not there is a blockage in its path
         self.blockage = False
-
-
-    def addBubbleConstraints(self, time, prox_loc):
-        """ NOT USED IN THIS VERSION
-        Add the bubble constraints for the agent (i.e. the locations of the neighbouring agents + a bubble around them) 
-        Args:
-            time (int): the time at which the constraints are added
-            prox_loc (list) : the locations at which other agents are (and have to be avoided)
-        """
-
-        # iterate among each proximum agent
-        self.constraints = []
-        for neighbour in prox_loc:
-                if neighbour['reached_goal'] == False:
-                    bubble =  [(0, -1), (1, 0), (0, 1), (-1, 0), (0, 0)]
-                    # iterates among the bubble_locations (i.e. the places the agent might go in the next iteration)
-                    # TODO: accomodate for the sitaution when more than one move might be performed between two path computations
-                    for move in bubble:
-                        constr_loc = neighbour['location'][0] + move[0], neighbour['location'][1] + move[1]
-                        # add the constraint for the next x timesteps to motivate agent to take another path
-                        for t in range (0,2):
-                            self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time+t, 'hard':False})
-                else:
-                    constr_loc = neighbour['location'][0], neighbour['location'][1]
-                    for t in range (0,2):
-                        self.constraints.append({'agent': self.id,'loc': [constr_loc],'timestep': time+t, 'hard':False})
+        self
 
 
     def addConstraints(self, time, prox_loc):
@@ -67,7 +45,7 @@ class AircraftDistributed(object):
         """
         # reset the constraints list
         self.constraints = []       
-    
+        '''
         # for each neighbouring agent, check if it reached its goal
         # also check if the current agent is blocked, if this is the case, no constraints should be added
         for neighbour in prox_loc:
@@ -84,6 +62,14 @@ class AircraftDistributed(object):
                 # Since i am not blocked, i should impose heavy penalty on that location to motivate myself to take another route
                 for t in range (0,(25)):                      
                     self.constraints.append({'agent': self.id,'loc': [neighbour['planned_path'][0]],'timestep': time+t+1, 'hard':False})
+        '''
+        for neighbour in prox_loc:
+            if self.blockage == False:
+                print(neighbour['planned_path'])
+                if time > 0:
+                    self.constraints.append({'agent': self.id,'loc': neighbour['planned_path'][0],'timestep': time+1, 'hard':False})
+                self.constraints.append({'agent': self.id,'loc': [neighbour['location']],'timestep': time+1, 'hard':False})
+   
            
 
 
