@@ -146,9 +146,10 @@ class DistributedPlanning(object):
             if agent.path[-wait_time - 1] != agent.path[-wait_time - 2]:
                 break
             
-            wait_time += 1 
-        
+            wait_time += 1
+
         agent.waiting = wait_time
+
 
         return wait_time
 
