@@ -286,6 +286,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 #raise Exception('TIME LIMIT')
                 time_limit_reached = True
                 # when the time limit is hit, return the results as an empty list to indicate that no solution was found 
+                # do not penalize the cpu time fo the method for sitatuions where no results was found anyways
                 result = []       
+                self.CPU_time = 0
 
         return result, self.CPU_time

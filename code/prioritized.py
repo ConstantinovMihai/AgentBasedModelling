@@ -56,7 +56,7 @@ class PrioritizedPlanningSolver(object):
                 # if the length of the path is very large, as agent has to wait very long, it is assumed no solution can be found and an empty list is returned
                 if len(path)> 500:
                     result = []
-                    print('time limit')
+                    
                     break
 
             # for each agent after current agent        
@@ -65,7 +65,6 @@ class PrioritizedPlanningSolver(object):
                 for path in result:
                     # for each location of previous agents
                     for t in range(0,len(path)):
-                        # TODO: PROPERLY DOCUMENT THIS PART OF THE CODE 
                         # if the last location of that agent, implement constraint for next 100 time steps
                         if  t == len(path)-1:
                             for constraint_time in range(t,100):
@@ -78,6 +77,10 @@ class PrioritizedPlanningSolver(object):
                             constraints.append({'agent': j,'loc': [path[t+1],path[t]],'timestep': t+1})
 
         self.CPU_time = timer.time() - start_time
+        
+        # do not penalize the cpu time fo the method for sitatuions where no results was found anyways
+        if not result:
+            self.CPU_time = 0
 
         print("\n Found a solution! \n")
         print("CPU time (s):    {:.2f}".format(self.CPU_time))
