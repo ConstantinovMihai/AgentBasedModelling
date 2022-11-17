@@ -155,7 +155,7 @@ def runSimulation(args, animate=False, perc_fill = 50, nb_maps=3, max_agents=10,
     generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min_map, animate, perc_fill, plotVar)
     
     # save the dicionary containing all the results
-    with open('saved_dictionary.pkl', 'wb') as f:
+    with open(f'saved_dictionary_{args.solver}.pkl', 'wb') as f:
         pickle.dump(results, f)
 
 
@@ -179,17 +179,14 @@ def testExistingMaps(args):
 if __name__ == '__main__':
         
     args = utilities.parseArgs()
-   
-
+  
     # testExistingMaps(args)
+    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=4, nb_spawns=[1], min_agents=3, min_map=2, plotVar=True)
 
-    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=9, nb_spawns=[1], min_agents=9, min_map=2, plotVar=True)
-    
     results = {}
 
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:
         results = pickle.load(f)
 
-    print(results)
 
