@@ -34,17 +34,55 @@ def shapiroWilk(data : list, significance_lvl : float = 0.05):
 
     Args:
         data (list): data to be checked for normality
+        significance_lvl (float, optional): the significance level under which the Null hypothesis is rejected. Defaults to 0.05.
     
     Returns a bool, concerning whether the data came from a normal distribution (True) or not (False), depending on the sifnificance lvl
     """
 
     shapiro_test = stats.shapiro(data)
-    return shapiro_test.pvalue > significance_lvl
+    
+    # if True, the alternative hypothesis is accepted (data is not drawn from a normal distribution)
+    return shapiro_test.pvalue < significance_lvl
+
+
+def mannWhitneyUTest(data1 : list, data2 : list, significance_lvl : float = 0.05):
+    """ Performs the Mann Whitney U test on two sets of sampled data (not normally distributed according to the Shapiro Wilk test)
+
+    Args:
+        data1 (list): data sampled from the first distribution
+        data2 (list): data sampled from the second distribution
+        significance_lvl (float, optional): the significance level under which the Null hypothesis is rejected. Defaults to 0.05.
+    
+    Returns a bool concerning whether or not the Null hypothesis is rejected
+    """
+
+    mannwhitneyu_test = stats.mannwhitneyu(data1, data2, method="exact")
+    
+    # if True, the alternative hypothesis is accepted (the true difference of the 2 distributions is indeed not 0)
+    return mannwhitneyu_test.pvalue < significance_lvl
+    
+
+
+def unpairedTTest(data1 : list, data2 : list, significance_lvl : float = 0.05):
+    """ Performs the unpaired t test on two sets of sampled data (normally distributed according to the Shapiro Wilk test)
+
+    Args:
+        data1 (list): data sampled from the first distribution
+        data2 (list): data sampled from the second distribution
+        significance_lvl (float, optional): the significance level under which the Null hypothesis is rejected. Defaults to 0.05.
+    
+    Returns a bool concerning whether or not the Null hypothesis is rejected
+    """
+    
+    ttest_unpaired = stats.ttest_ind(data1, data2)
+
+    # if True, the alternative hypothesis is accepted (the true difference of the 2 distributions is indeed not 0)
+    return ttest_unpaired.pvalue < significance_lvl
 
 
 if __name__ == "__main__":
     rng = np.random.default_rng()
-    x = stats.norm.rvs(loc=5, scale=3, size=100, random_state=rng.binomial)
+    x = stats.norm.rvs(loc=5, scale=3, size=100, random_state=rng)
     print(f'is data normal? {shapiroWilk(x)}')
 
     
