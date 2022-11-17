@@ -1,2 +1,5 @@
 _*
 code/__pycache__/*
+code\validtimes.txt
+code\variation_times.txt
+*.txt
