@@ -112,11 +112,12 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
                    
                 
                 failed_exp_perc = 1 - np.count_nonzero(results[key][1::2]) / len(results[key][1::2])
-                results[key] = {"failed_perc" : failed_exp_perc, "valid_costs" : valid_costs, "valid_times" : valid_times}
+                results[key] = {"failed_perc" : failed_exp_perc, "mean_cost" : np.mean(valid_costs), "mean_time" : np.mean(valid_times),
+                "std_cost" : np.std(valid_costs), "std_time" : np.std(valid_times)}
                 
                 if plotVar:
-                    print(f"valid_costs {valid_costs}")
-                    print(f"valid_times {valid_times}")
+                    # print(f"valid_costs {valid_costs}")
+                    # print(f"valid_times {valid_times}")
                     plotVariation(variation_time, valid_times, variation_cost)
 
 
@@ -154,9 +155,10 @@ def runSimulation(args, animate=False, perc_fill = 50, nb_maps=3, max_agents=10,
     results = {}
     generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min_map, animate, perc_fill, plotVar)
     
+    save_data = [results, min_agents, max_agents, min_map, nb_maps, nb_spawns]
     # save the dicionary containing all the results
     with open(f'saved_dictionary_{args.solver}.pkl', 'wb') as f:
-        pickle.dump(results, f)
+        pickle.dump(save_data, f)
 
 
 def testExistingMaps(args):
@@ -181,12 +183,12 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
   
     # testExistingMaps(args)
-    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=4, nb_spawns=[1], min_agents=3, min_map=2, plotVar=True)
+    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=4, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=False)
 
     results = {}
 
     # load the dictionary with the results
-    with open('saved_dictionary.pkl', 'rb') as f:
-        results = pickle.load(f)
+    # with open('saved_dictionary.pkl', 'rb') as f:
+    #     results = pickle.load(f)
 
 
