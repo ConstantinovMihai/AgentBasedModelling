@@ -111,19 +111,29 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, args, min_agent
                     if (len(variation_time) == 200):
                         break
                 
-                    # TODO: remove this later when we're sure this routine works as intended
-                    print(f"len of variation is {len( variation_time)}")
-                x = np.arange(len(variation_time))
+                plotVariation(variation_time, valid_times, variation_cost)
 
-                np.savetxt('validtimes.txt', valid_times, delimiter=',')
-                np.savetxt('variation_time.txt', variation_time, delimiter=',')
 
-                # plot of the costs&times
-                plt.plot(x, variation_cost, color="red", label="cost")
-                plt.plot(x, variation_time, color="green", label="time")
-                plt.ylim(bottom=0)
-                plt.legend()
-                plt.show()
+def plotVariation(variation_time : float, valid_times : list, variation_cost : float):
+    """ Generates the stabilisation of coefficient of variation plot
+
+    Args:
+        variation_time (float): _description_
+        valid_times (list): _description_
+        variation_cost (float): _description_
+    """
+    
+    x = np.arange(len(variation_time))
+
+    np.savetxt('validtimes.txt', valid_times, delimiter=',')
+    np.savetxt('variation_time.txt', variation_time, delimiter=',')
+
+    # plot of the costs&times
+    plt.plot(x, variation_cost, color="red", label="cost")
+    plt.plot(x, variation_time, color="green", label="time")
+    plt.ylim(bottom=0)
+    plt.legend()
+    plt.show()
 
 
 def runSimulation(args, animate=False, perc_fill = 50):
@@ -155,7 +165,6 @@ def testExistingMaps(args):
     # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
     testPathSimulation(args, my_map, starts, goals, paths, animate=True)
-    pass
 
 
 if __name__ == '__main__':
@@ -163,9 +172,9 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
     results = {}
 
-    testExistingMaps(args)
+   # testExistingMaps(args)
 
-    # runSimulation(args, animate=False, perc_fill = 33)
+    runSimulation(args, animate=False, perc_fill = 33)
     
     # load the dictionary with the results
     with open('saved_dictionary.pkl', 'rb') as f:

@@ -286,6 +286,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         if self.time == 500:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
                 #raise Exception('TIME LIMIT')
-                time_limit_reached = True             
+                time_limit_reached = True
+                # when the time limit is hit, return the results as an empty list to indicate that no solution was found 
+                result = []       
 
         return result, self.CPU_time
