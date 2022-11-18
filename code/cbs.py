@@ -207,7 +207,7 @@ class CBSSolver(object):
                     
             #i +=1
 
-        self.print_results(root)
+        # self.print_results(root)
         return root, self.CPU_time
         
 

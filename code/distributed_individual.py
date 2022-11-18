@@ -279,7 +279,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         
         # check whether there are collisions (debugging)        
         self.printCollisions(result)    
-        self.printResult(result)
+        # self.printResult(result)
 
         if self.time == 500:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
