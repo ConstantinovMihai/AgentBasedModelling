@@ -50,10 +50,10 @@ def runOneExperiment(map, nb_agents, spawn_type, results, animate=False, perc_fi
     file_key = f"map_{map}-agent_{nb_agents}-spawn_{spawn_type}"
     # check if the key is already in the dict, if not, create it
     if file_key not in results:
-        results[file_key] = np.array((cost, round(time, 6)))
+        results[file_key] = np.array((cost,time))
     # add the simulation results to the corresponding dict
     else:
-        results[file_key] = np.append(results[file_key], (cost, round(time, 6)))
+        results[file_key] = np.append(results[file_key], (cost, time))
 
     testPathSimulation(args, my_map, starts, goals, paths, animate)
 
@@ -88,9 +88,10 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
                 # condition for stopping to iterate:
                 # if the current variation coefficient is within a half of a standard deviation from
                 # the mean of the last quarter of the simulations
+            
                 while ((np.std(variation_time[-100:]) >= 0.25 * np.mean(variation_time[-100:]))
                     or (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:]))):
-                    
+                   
                     # runs one experiment
                     runOneExperiment(map, agent, spawn_type, results, animate, perc_fill)
                     
@@ -98,8 +99,9 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
 
                     # find the indeces where cost is not 0 (the valid experiments)
                     # store their indeces
-                    valid_experiments = np.nonzero(data[1::2])
-                    failed_exp_perc = 1 - np.count_nonzero(data[1::2]) / len(data[1::2])
+                    valid_experiments = np.nonzero(data[0::2])
+                   
+                    failed_exp_perc = 1 - np.count_nonzero(data[0::2]) / len(data[0::2])
 
                     # store the costs and times obtained in the valid experiments
                     valid_costs = data[::2][valid_experiments]
@@ -111,10 +113,11 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
                     variation_time = np.append(variation_time, np.std(valid_times) / np.mean((valid_times)))
                    
                 
-                failed_exp_perc = 1 - np.count_nonzero(results[key][1::2]) / len(results[key][1::2])
+                failed_exp_perc = 1 - np.count_nonzero(results[key][0::2]) / len(results[key][0::2])
                 results[key] = {"failed_perc" : failed_exp_perc, "mean_cost" : np.mean(valid_costs), "mean_time" : np.mean(valid_times),
                 "std_cost" : np.std(valid_costs), "std_time" : np.std(valid_times)}
                 
+
                 if plotVar:
                     # print(f"valid_costs {valid_costs}")
                     # print(f"valid_times {valid_times}")
@@ -143,7 +146,7 @@ def plotVariation(variation_time : float, valid_times : list, variation_cost : f
     plt.show()
 
 
-def runSimulation(args, animate=False, perc_fill = 50, nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=8, min_map=2, plotVar=False):
+def runSimulation(args, animate=False, perc_fill = 50, nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=8, min_map=2, plotVar=True):
     """ Runs the experiments and saves the results in a pickle structure
     Args:
         args (str) : string with the arguments passed through the terminal by the user
@@ -183,7 +186,7 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
   
     # testExistingMaps(args)
-    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=5, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=False)
+    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=5, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=True)
 
     results = {}
 

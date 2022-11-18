@@ -238,7 +238,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals. A time limit is also imposed in case the algorithm cannot find a solution
-        while not all(self.goalsReached(agents)) and self.time<500:               
+        while not all(self.goalsReached(agents)) and self.time<100:               
             
             # Find if any agents are blocked from reaching their goal by other agents who have already reached their goal
             self.findBlockages(agents)
@@ -281,7 +281,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         self.printCollisions(result)    
         # self.printResult(result)
 
-        if self.time == 500:
+        if self.time == 100:
                 print(f"time limit hit in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
                 #raise Exception('TIME LIMIT')
                 time_limit_reached = True

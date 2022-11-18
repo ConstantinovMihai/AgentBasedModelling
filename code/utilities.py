@@ -123,19 +123,19 @@ def processArgs(args, my_map, starts, goals):
     time = 0
     paths = []
     if args.solver == "CBS":
-        print("***Run CBS***")
+        # print("***Run CBS***")
         cbs = CBSSolver(my_map, starts, goals)
         paths, time = cbs.findSolution(args.disjoint)
     elif args.solver == "Independent":
-        print("***Run Independent***")
+        # print("***Run Independent***")
         solver = IndependentSolver(my_map, starts, goals)
         paths, time = solver.find_solution()
     elif args.solver == "Prioritized":
-        print("***Run Prioritized***")
+        # print("***Run Prioritized***")
         solver = PrioritizedPlanningSolver(my_map, starts, goals)
         paths, time = solver.find_solution()
     elif args.solver == "Distributed":  # Wrapper of distributed planning solver class
-        print("***Run Distributed Planning***")
+        # print("***Run Distributed Planning***")
         heuristics = [3, 200, 10, 2, 8] # the default values for the heuristics, see the constructor of DistributedClass
         if args.heuristics != "none":
             heuristics = args.heuristics.strip('][').split(',')
