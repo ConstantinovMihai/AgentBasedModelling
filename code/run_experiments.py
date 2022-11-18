@@ -183,7 +183,7 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
   
     # testExistingMaps(args)
-    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=4, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=False)
+    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=5, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=False)
 
     results = {}
 
