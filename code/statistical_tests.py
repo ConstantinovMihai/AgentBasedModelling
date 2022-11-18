@@ -58,8 +58,8 @@ def mannWhitneyUTest(data1 : list, data2 : list, significance_lvl : float = 0.05
 
     mannwhitneyu_test = stats.mannwhitneyu(data1, data2, method="exact")
     
-    # if True, the alternative hypothesis is accepted (the true difference of the 2 distributions is indeed not 0)
-    return mannwhitneyu_test.pvalue < significance_lvl
+    # if True, the null hypothesis is accepted (the true difference of the 2 distributions is indeed 0)
+    return mannwhitneyu_test.pvalue > significance_lvl
     
 
 
@@ -79,6 +79,23 @@ def unpairedTTest(data1 : list, data2 : list, significance_lvl : float = 0.05):
     # if True, the alternative hypothesis is accepted (the true difference of the 2 distributions is indeed not 0)
     return ttest_unpaired.pvalue < significance_lvl
 
+
+
+def statisticalTests(data1 : list, data2 : list, significance_lvl : float = 0.05):
+    """ Performs statistical tests on sample data coming from two unpaired distribution
+
+    Args:
+        data1 (list): data sampled from the first distribution
+        data2 (list): data sampled from the second distribution
+        significance_lvl (float, optional): the significance level under which the Null hypothesis is rejected. Defaults to 0.05.
+    
+    Returns a bool concerning whether or not the Null hypothesis is rejected
+    """
+    # if both samples come from normally distributed data, then run the unpaired t test, otherwise use Mann Whitney U test
+    if shapiroWilk(data1) and shapiroWilk(data2):
+        return unpairedTTest(data1, data2)
+
+    return  mannWhitneyUTest(data1, data2)
 
 if __name__ == "__main__":
     rng = np.random.default_rng()

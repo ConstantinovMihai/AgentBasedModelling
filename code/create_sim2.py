@@ -47,6 +47,7 @@ def neighboursFilledGeneral(map : list, goal_locations : list, prop_location : t
         perc_fill = neighboursFilled(map, goal_locations_aux, loc, y_spawn)
         if (perc_fill > 50):
             filled = True
+            break
 
     return filled
 
@@ -89,12 +90,12 @@ def createsSimulationInput(map_nb : int, nb_agents : int, spawn_type : int, perc
             goal_location = (random.choice(range(0, 9)),random.choice(y_spawn)) 
 
             # percentage of viable neighboring cells already filled
-            perc_filled_all = neighboursFilledGeneral(map, goal_locations, goal_location, y_spawn, perc_fill)
+            propcell_perc_filled = neighboursFilled(map, goal_locations, goal_location, y_spawn)
             
-            while (goal_location in goal_locations or perc_filled_all == True):
+            while (goal_location in goal_locations or propcell_perc_filled > perc_fill):
                 goal_location = (random.choice(range(0, 9)),random.choice(y_spawn))         
                 # percentage of viable neighboring cells already filled
-                perc_filled_all = neighboursFilledGeneral(map, goal_locations, goal_location, y_spawn, perc_fill) 
+                propcell_perc_filled = neighboursFilled(map, goal_locations, goal_location, y_spawn)
             
             goal_locations.append(goal_location)
 
@@ -113,14 +114,16 @@ def createsSimulationInput(map_nb : int, nb_agents : int, spawn_type : int, perc
             goal_location = (random.choice(range(0, 9)),random.choice(y_spawn))
 
             # percentage of viable neighboring cells already filled
-            perc_filled_all = neighboursFilledGeneral(map, goal_locations, goal_location, y_spawn, perc_fill)
-            while (goal_location in goal_locations or perc_filled_all == True):
+            propcell_perc_filled = neighboursFilled(map, goal_locations, goal_location, y_spawn)
+            
+            while (goal_location in goal_locations or propcell_perc_filled > perc_fill):
                 goal_location = (random.choice(range(0, 9)),random.choice(y_spawn))         
                 # percentage of viable neighboring cells already filled
-                perc_filled_all = neighboursFilledGeneral(map, goal_locations, goal_location, y_spawn, perc_fill) 
+                propcell_perc_filled = neighboursFilled(map, goal_locations, goal_location, y_spawn)
 
             goal_locations.append(goal_location)
-
+    
+    # make sure nothing (obvious) went wrong so far 
     assert(len(start_locations) == len(goal_locations))
     return map, start_locations, goal_locations
 
