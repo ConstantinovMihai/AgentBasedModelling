@@ -82,8 +82,8 @@ class PrioritizedPlanningSolver(object):
         if not result:
             self.CPU_time = 0
 
-        # print("\n Found a solution! \n")
-        # print("CPU time (s):    {:.2f}".format(self.CPU_time))
-        # print("Sum of costs:    {}".format(getSumOfCost(result)))
+        print("\n Found a solution! \n")
+        print("CPU time (s):    {:.2f}".format(self.CPU_time))
+        print("Sum of costs:    {}".format(getSumOfCost(result)))
       
         return result, self.CPU_time

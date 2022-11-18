@@ -173,8 +173,8 @@ def testExistingMaps(args):
     """
     
     
-    # starts = [(3, 20), (2, 20), (7, 20), (8, 21), (0, 21), (5, 20), (5, 0), (4, 21), (5, 1)]
-    # goals = [(6, 0), (4, 1), (2, 0), (3, 0), (1, 1), (5, 1), (1, 20), (0, 1), (6, 21)]
+    # starts = [(4, 21), (5, 21), (6, 0), (2, 21), (7, 20), (0, 20), (8, 1), (4, 20), (5, 1), (5, 20)]
+    # goals = [(7, 1), (6, 0), (4, 20), (8, 1), (4, 0), (3, 0), (1, 20), (3, 1), (8, 20), (2, 0)]
     # my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
     my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
   
     # testExistingMaps(args)
-    runSimulation(args, animate=False, perc_fill = 50, nb_maps=2, max_agents=5, nb_spawns=[0,1], min_agents=2, min_map=0, plotVar=True)
+    runSimulation(args, animate=False, perc_fill = 35, nb_maps=2, max_agents=10, nb_spawns=[0,1], min_agents=1, min_map=0, plotVar=False)
 
     results = {}
 
