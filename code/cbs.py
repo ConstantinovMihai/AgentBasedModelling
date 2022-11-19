@@ -173,7 +173,7 @@ class CBSSolver(object):
             if len(P['collisions']) == 0:
                 self.CPU_time = timer.time() - self.start_time
                 # print the results
-                self.print_results(root)
+                # self.print_results(root)
                 return P['paths'], self.CPU_time
 
             # convert collision to list of two constraints         

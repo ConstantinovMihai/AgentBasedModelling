@@ -16,6 +16,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import utilities
+import time as timer
+from datetime import datetime
 
 SOLVER = "CBS"
 
@@ -80,6 +82,12 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
             for spawn_type in nb_spawns:
                 # name of the key in the results dict
                 key = f"map_{map}-agent_{agent}-spawn_{spawn_type}"
+                now = datetime.now()
+
+                current_time = now.strftime("%H:%M:%S")
+                print(key)
+                print(args.solver)
+                print("Current Time =", current_time)
 
                 # avoids "referenced before assignment error"
                 variation_cost = [0]
@@ -88,14 +96,17 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
                 # condition for stopping to iterate:
                 # if the current variation coefficient is within a half of a standard deviation from
                 # the mean of the last quarter of the simulations
-            
-                while ((np.std(variation_time[-100:]) >= 0.25 * np.mean(variation_time[-100:]))
-                    or (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:]))):
-                   
+                counter = 0
+                while (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:])) and counter < 250:
+                    counter += 1
+                    now = datetime.now()
+                    current_time = now.strftime("%H:%M:%S")
                     # runs one experiment
+                    print("Current Time =", current_time)
                     runOneExperiment(map, agent, spawn_type, results, animate, perc_fill)
                     
                     data = results[key]
+                  
 
                     # find the indeces where cost is not 0 (the valid experiments)
                     # store their indeces
@@ -146,7 +157,7 @@ def plotVariation(variation_time : float, valid_times : list, variation_cost : f
     plt.show()
 
 
-def runSimulation(args, animate=False, perc_fill = 50, nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=8, min_map=2, plotVar=True):
+def runSimulation(args, animate=False, perc_fill = 65, nb_maps=3, max_agents=10, nb_spawns=[1], min_agents=8, min_map=2, plotVar=True):
     """ Runs the experiments and saves the results in a pickle structure
     Args:
         args (str) : string with the arguments passed through the terminal by the user
@@ -186,7 +197,7 @@ if __name__ == '__main__':
     args = utilities.parseArgs()
   
     # testExistingMaps(args)
-    runSimulation(args, animate=False, perc_fill = 35, nb_maps=2, max_agents=10, nb_spawns=[0,1], min_agents=1, min_map=0, plotVar=False)
+    runSimulation(args, animate=False, perc_fill = 75, nb_maps=2, max_agents=10, nb_spawns=[0,1], min_agents=1, min_map=0, plotVar=False)
 
     results = {}
 
