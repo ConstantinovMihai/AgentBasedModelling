@@ -198,6 +198,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             if agent.location == agent.goal:
                 temp_map[agent.location[0]][agent.location[1]] = True
         
+        counter = 0
         for agent in agents:
             agent.blockage = False
             if agent.location != agent.goal:
@@ -205,8 +206,9 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # in the case where their current location is not in the list of locations which have a heuristic value, this means there is no path
                 # then the agents blockage status is set to true
                 heuristics = computeHeuristics(temp_map, agent.goal)
-                if agent.location not in heuristics:
+                if agent.location not in heuristics and counter == 0:
                     agent.blockage = True
+                    counter +=1
                     # print(agent.id,"Blockage") 
 
     def adjustHeuristics(self, agent, prox_loc):
@@ -247,7 +249,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             for agent in agents:
                 #the amount of time an agent has spent waiting at a location is calculated
                 wait_time = self.waitingTime(agent)
-
+                if wait_time >2:
+                    agent.heuristics[agent.path[-1]] += wait_time *agent.heuristics[agent.path[-1]] 
                 # fnds and stores the locations of nearby agents                
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc
@@ -255,6 +258,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 # adjust penalties to cells which are inhibited by a neigbour agent by increasing the heuristic value of these cells
                 # the cells agents intend to inhibit in the future are also penalized based on which agent has priority
                 self.adjustHeuristics(agent, prox_loc)
+
                 
             # run planning for each agent
             for agent in agents:

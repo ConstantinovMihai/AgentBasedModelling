@@ -152,7 +152,7 @@ class DistributedPlanning(object):
         if collisions:
             print(f"Collisions detected in a map defined by: my_map {self.my_map}\n starts {self.starts}\n and goals {self.goals}")
             print(collisions)
-            raise Exception('Collision')
+            # raise Exception('Collision')
 
 
     def printResult(self, result):
