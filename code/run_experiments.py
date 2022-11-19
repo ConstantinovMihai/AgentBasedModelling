@@ -41,6 +41,7 @@ def runOneExperiment(map, nb_agents, spawn_type, results, animate=False, perc_fi
        results (dict): stores the results for the iterations for each experimental instance
     """
     my_map, starts, goals = createsSimulationInput(map, nb_agents, spawn_type, perc_fill)
+    print('map')
                     
     # get paths and time for the simulation
     paths, time = utilities.processArgs(args, my_map, starts, goals )
