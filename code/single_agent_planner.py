@@ -160,7 +160,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints, time = 0, 
     closed_list[(root['loc'],root['t_step'])] = root
     while len(open_list) > 0:
         curr = popNode(open_list)
-    
+        
         # if agent has reached goal location and there are no constraints posed on agent at a later time:
         # in the case of the distributed solver, once the goal is reached, the path is returned, further constraints are ignored     
         if curr['loc'] == goal_loc and len(getPath(curr)) >= len(indexed_constraint_table) and distributed == False:

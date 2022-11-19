@@ -240,7 +240,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals. A time limit is also imposed in case the algorithm cannot find a solution
-        while not all(self.goalsReached(agents)) and self.time<100:               
+        while not all(self.goalsReached(agents)) and self.time<100: 
+            print("timeeeeeeeeeeeeeeeeeeeeeee",self.time)             
             
             # Find if any agents are blocked from reaching their goal by other agents who have already reached their goal
             self.findBlockages(agents)
@@ -249,8 +250,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             for agent in agents:
                 #the amount of time an agent has spent waiting at a location is calculated
                 wait_time = self.waitingTime(agent)
-                if wait_time >2:
-                    agent.heuristics[agent.path[-1]] += wait_time *agent.heuristics[agent.path[-1]] 
+                # if wait_time >2:
+                #     agent.heuristics[agent.path[-1]] += wait_time *agent.heuristics[agent.path[-1]] 
                 # fnds and stores the locations of nearby agents                
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc
