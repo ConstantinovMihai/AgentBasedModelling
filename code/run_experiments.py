@@ -41,7 +41,7 @@ def runOneExperiment(map, nb_agents, spawn_type, results, animate=False, perc_fi
        results (dict): stores the results for the iterations for each experimental instance
     """
     my_map, starts, goals = createsSimulationInput(map, nb_agents, spawn_type, perc_fill)
-    print('map')
+    
                     
     # get paths and time for the simulation
     paths, time = utilities.processArgs(args, my_map, starts, goals )
@@ -98,12 +98,13 @@ def generateExperiments(nb_maps, max_agents, nb_spawns, results, min_agents, min
                 # if the current variation coefficient is within a half of a standard deviation from
                 # the mean of the last quarter of the simulations
                 counter = 0
-                while (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:])) and counter < 250:
+                while ((counter <25 or (np.std(variation_cost[-100:]) >= 0.25 * np.mean(variation_cost[-100:]))) and counter < 250):
                     counter += 1
                     now = datetime.now()
                     current_time = now.strftime("%H:%M:%S")
-                    # runs one experiment
+                    
                     print("Current Time =", current_time)
+                    # runs one experiment
                     runOneExperiment(map, agent, spawn_type, results, animate, perc_fill)
                     
                     data = results[key]

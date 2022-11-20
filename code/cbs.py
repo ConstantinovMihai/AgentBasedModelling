@@ -166,7 +166,7 @@ class CBSSolver(object):
         #                standard_splitting function). Add a new child node to your open list for each constraint
         #           Ensure to create a copy of any objects that your child nodes might inherit
         self.CPU_time = 0
-        while len(self.open_list) > 0 and self.CPU_time< 60:
+        while len(self.open_list) > 0 and self.CPU_time< 30:
             self.CPU_time = timer.time() - self.start_time 
             # get next node with smallest cost
             P = self.popNode()  
@@ -209,7 +209,7 @@ class CBSSolver(object):
                     self.pushNode(Q)
                     
             #i +=1
-        if self.CPU_time > 60:
+        if self.CPU_time > 30:
             print("TIME LIMIT HIT")
             # raise Exception("TIME LIMIT")
             return [], 0
