@@ -230,17 +230,17 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
                 for i, planned_loc in enumerate(neighbour['planned_path']):    
                     agent.current_heuristics[planned_loc] = self.soft_heur_factor * agent.heuristics[planned_loc]
 
-    def findSolution(self):
+    def findSolution(self, time_limit = 60):
     
         """ Finds paths for all agents from their start locations to their goal locations."""
-        time_limit = 60
+      
         start_time = timer.time()
         agents = self.initialiseAgents()
         # this stores the paths for each agent. This list is filled once a final solution is found
         result = []
         self.CPU_time = timer.time() - start_time 
         # simulate until all the agents reached their goals. A time limit is also imposed in case the algorithm cannot find a solution
-        while not all(self.goalsReached(agents)) and (self.time<100 or self.CPU_time <time_limit): 
+        while not all(self.goalsReached(agents)) and (self.time<100 and self.CPU_time <time_limit): 
             self.CPU_time = timer.time() - start_time 
             
             # Find if any agents are blocked from reaching their goal by other agents who have already reached their goal
