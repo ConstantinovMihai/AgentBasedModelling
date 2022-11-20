@@ -168,7 +168,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             result (list) : the list of final paths
         """
         
-        # when everything is done, store the final paths in the results and remove locations of agent waiting at goal from path to not influence the total cost
+        # when everything is done, store the final paths in the results and 
+        # remove locations of agent waiting at goal from path to not influence the total cost
         for agent in agents:          
             trim_length = 0
             found = False
@@ -198,6 +199,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             if agent.location == agent.goal:
                 temp_map[agent.location[0]][agent.location[1]] = True
         
+        # the counter is used to avoid a weird edge case where two agents are blocked, which produces collisions
         counter = 0
         for agent in agents:
             agent.blockage = False
