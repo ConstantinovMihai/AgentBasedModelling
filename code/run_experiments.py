@@ -41,6 +41,7 @@ def runOneExperiment(map, nb_agents, spawn_type, results, animate=False, perc_fi
        results (dict): stores the results for the iterations for each experimental instance
     """
     my_map, starts, goals = createsSimulationInput(map, nb_agents, spawn_type, perc_fill)
+    print('map')
                     
     # get paths and time for the simulation
     paths, time = utilities.processArgs(args, my_map, starts, goals )
@@ -184,10 +185,10 @@ def testExistingMaps(args):
     """
     
     
-    starts = [(2, 0), (6, 0), (5, 1), (5, 0), (3, 1), (8, 0), (8, 1), (7, 1), (0, 0)]
-    goals = [(1, 20), (2, 20), (8, 21), (3, 20), (4, 20), (0, 20), (7, 21), (2, 21), (6, 20)]
-    my_map =  [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
-    # my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
+    # starts = [(0, 1), (3, 1), (7, 0), (5, 0), (4, 0), (4, 1), (2, 0)]
+    # goals = [(5, 21), (8, 20), (6, 21), (7, 20), (8, 21), (0, 20), (6, 20)]
+    # my_map = [[False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, True, True, True, True, False, False, False, True, True, True, True, False, False, False, True, True, True, True, False, False]]
+    my_map, starts, goals = utilities.import_mapf_instance('dist_test.txt')
     paths, time = utilities.processArgs(args, my_map, starts, goals)
     testPathSimulation(args, my_map, starts, goals, paths, animate=True)
 
@@ -196,8 +197,8 @@ if __name__ == '__main__':
         
     args = utilities.parseArgs()
   
-    testExistingMaps(args)
-    # runSimulation(args, animate=False, perc_fill = 75, nb_maps=2, max_agents=10, nb_spawns=[0,1], min_agents=1, min_map=0, plotVar=False)
+    # testExistingMaps(args)
+    runSimulation(args, animate=False, perc_fill = 75, nb_maps=2, max_agents=10, nb_spawns=[0,1], min_agents=1, min_map=0, plotVar=False)
 
     results = {}
 

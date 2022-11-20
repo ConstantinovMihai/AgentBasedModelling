@@ -165,8 +165,9 @@ class CBSSolver(object):
         #             3. Otherwise, choose the first collision and convert to a list of constraints (using your
         #                standard_splitting function). Add a new child node to your open list for each constraint
         #           Ensure to create a copy of any objects that your child nodes might inherit
-        
-        while len(self.open_list) > 0:        
+        self.CPU_time = 0
+        while len(self.open_list) > 0 and self.CPU_time< 60:
+            self.CPU_time = timer.time() - self.start_time 
             # get next node with smallest cost
             P = self.popNode()  
             # if node has no collisions, return paths         
@@ -192,9 +193,11 @@ class CBSSolver(object):
                 'collisions': []}
                 ai = constraint['agent']
                 
-                # create path for child including new constraint           
+                # create path for child including new constraint 
+                         
                 path = a_star(self.my_map, self.starts[ai], self.goals[ai], self.heuristics[ai],
-                          ai, Q['constraints'])                
+                          ai, Q['constraints'])
+                   
                 
                 if path != None:
                                         
@@ -206,6 +209,11 @@ class CBSSolver(object):
                     self.pushNode(Q)
                     
             #i +=1
+        if self.CPU_time > 60:
+            print("TIME LIMIT HIT")
+            # raise Exception("TIME LIMIT")
+            return [], 0
+            
 
         # self.print_results(root)
         return root, self.CPU_time
