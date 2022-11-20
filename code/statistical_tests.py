@@ -41,8 +41,8 @@ def shapiroWilk(data : list, significance_lvl : float = 0.05):
 
     shapiro_test = stats.shapiro(data)
     
-    # if True, the alternative hypothesis is accepted (data is not drawn from a normal distribution)
-    return shapiro_test.pvalue < significance_lvl
+    # if True, the null hypothesis is accepted (data is drawn from a normal distribution)
+    return shapiro_test.pvalue > significance_lvl
 
 
 def mannWhitneyUTest(data1 : list, data2 : list, significance_lvl : float = 0.05):
@@ -57,9 +57,9 @@ def mannWhitneyUTest(data1 : list, data2 : list, significance_lvl : float = 0.05
     """
 
     mannwhitneyu_test = stats.mannwhitneyu(data1, data2, method="exact")
-    
-    # if True, the null hypothesis is accepted (the true difference of the 2 distributions is indeed 0)
-    return mannwhitneyu_test.pvalue > significance_lvl
+    print(f"mannwhitneyu_test.pvalue {mannwhitneyu_test.pvalue}, p_value {significance_lvl}")
+    # if True, the alternative hypothesis is accepted (the true difference of the 2 distributions is indeed not 0)
+    return mannwhitneyu_test.pvalue < significance_lvl
     
 
 
@@ -89,13 +89,14 @@ def statisticalTests(data1 : list, data2 : list, significance_lvl : float = 0.05
         data2 (list): data sampled from the second distribution
         significance_lvl (float, optional): the significance level under which the Null hypothesis is rejected. Defaults to 0.05.
     
-    Returns a bool concerning whether or not the Null hypothesis is rejected
+    Returns a bool concerning whether or not the Alternative hypothesis is accepted, i.e. if True - different means
     """
-    # if both samples come from normally distributed data, then run the unpaired t test, otherwise use Mann Whitney U test
-    if shapiroWilk(data1) and shapiroWilk(data2):
-        return unpairedTTest(data1, data2)
 
-    return  mannWhitneyUTest(data1, data2)
+    # if both samples come from normally distributed data, then run the unpaired t test, otherwise use Mann Whitney U test
+    if shapiroWilk(data1, significance_lvl) and shapiroWilk(data2, significance_lvl):
+        return unpairedTTest(data1, data2, significance_lvl)
+
+    return  mannWhitneyUTest(data1, data2, significance_lvl)
 
 if __name__ == "__main__":
     rng = np.random.default_rng()

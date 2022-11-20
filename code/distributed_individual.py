@@ -168,7 +168,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             result (list) : the list of final paths
         """
         
-        # when everything is done, store the final paths in the results and remove locations of agent waiting at goal from path to not influence the total cost
+        # when everything is done, store the final paths in the results and 
+        # remove locations of agent waiting at goal from path to not influence the total cost
         for agent in agents:          
             trim_length = 0
             found = False
@@ -198,6 +199,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             if agent.location == agent.goal:
                 temp_map[agent.location[0]][agent.location[1]] = True
         
+        # the counter is used to avoid a weird edge case where two agents are blocked, which produces collisions
         counter = 0
         for agent in agents:
             agent.blockage = False
@@ -240,8 +242,7 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
         result = []
 
         # simulate until all the agents reached their goals. A time limit is also imposed in case the algorithm cannot find a solution
-        while not all(self.goalsReached(agents)) and self.time<100: 
-            print("timeeeeeeeeeeeeeeeeeeeeeee",self.time)             
+        while not all(self.goalsReached(agents)) and self.time<100:               
             
             # Find if any agents are blocked from reaching their goal by other agents who have already reached their goal
             self.findBlockages(agents)
@@ -250,8 +251,8 @@ class DistributedPlanningSolverIndividual(DistributedPlanning):
             for agent in agents:
                 #the amount of time an agent has spent waiting at a location is calculated
                 wait_time = self.waitingTime(agent)
-                # if wait_time >2:
-                #     agent.heuristics[agent.path[-1]] += wait_time *agent.heuristics[agent.path[-1]] 
+                if wait_time >2:
+                    agent.heuristics[agent.path[-1]] += wait_time *agent.heuristics[agent.path[-1]] 
                 # fnds and stores the locations of nearby agents                
                 prox_loc = self.radarScanner(agent, agents)
                 # generates constraints using the prox_loc

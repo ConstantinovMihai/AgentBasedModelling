@@ -37,7 +37,8 @@ class PrioritizedPlanningSolver(object):
             # if no solution is found for this agent, return an empty list and do not attempt to solve for future agents
             # the empty list is used to detect that A* could not find solutions
             if path is None:
-                # result = []
+                # reset the results paths so it can be counted as a failed run
+                result = []
                 print('path none')
                 break
             else:            
